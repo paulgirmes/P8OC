@@ -1,8 +1,12 @@
 from django.shortcuts import render
-from  django.http import HttpResponse
+from django.http import HttpResponse
+
+from .forms import FoodQuery
 
 def home(request):
-    return render(request, "purbeurre\\base.html")
+    form = FoodQuery()
+    context={'form': form}
+    return render(request, "healthier/_index.html", context)
 
 def myaccount(request):
     return HttpResponse('myaccount')
@@ -15,6 +19,13 @@ def logout(request):
 
 def results(request):
     obj = str(request.GET)
-    query = request.GET['query']
+    query = request.GET['fooditem']
     message = "propriété GET : {} et requête : {}".format(obj, query)
     return HttpResponse(message)
+
+def contact(request):
+    return HttpResponse("contacts")
+
+
+def general_conditions(resquest):
+    return HttpResponse("legal")

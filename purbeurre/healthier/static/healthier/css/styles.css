@@ -570,7 +570,7 @@ pre code {
 }
 @media (min-width: 1200px) {
   .container {
-    max-width: 1140px;
+    max-width: 960px;
   }
 }
 
@@ -599,7 +599,7 @@ pre code {
 }
 @media (min-width: 1200px) {
   .container-xl, .container-lg, .container-md, .container-sm, .container {
-    max-width: 1140px;
+    max-width: 960px;
   }
 }
 .row {
@@ -10135,6 +10135,12 @@ header.masthead p{
 
 .navicon{
   max-height: 3em;
-  padding-right: 0.5em;
   vertical-align: middle;
+}
+.owner{
+  max-width: 150px;
+}
+.search{
+  margin-right: 1.5em;
+  margin-top: 0.5em;
 }
