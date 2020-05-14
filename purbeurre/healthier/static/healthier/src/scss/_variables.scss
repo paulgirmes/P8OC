@@ -2,11 +2,17 @@
 
 //- Override and add to color system
 
-$orange: #f4623a !default;
-$brown: #5c4d42 !default;
+$orange: hsl(13, 89%, 59%) !default;
+$brown: rgb(92, 77, 66) !default;
+$rooibos_chocolat: rgb(196, 85, 37);
+$moules-frites: #345a61;
+$bonbon_rigolo: rgb(132, 235, 230);
+$Caramel_mou: rgb(222, 148, 64);
+$Biscuit_trempe: rgb(232, 167, 93);
+
 
 //- Override primary color
-$primary: $orange !default;
+$primary: $rooibos_chocolat !default;
 
 //- Override font system
 $font-family-sans-serif: "Merriweather Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", 'Noto Color Emoji' !default;
