@@ -9992,6 +9992,10 @@ hr.light {
   vertical-align: middle;
 }
 
+.bg-moules-frites {
+  background-color: #345a61;
+}
+
 #mainNav {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
   background-color: #fff;
