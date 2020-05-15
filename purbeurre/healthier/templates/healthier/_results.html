@@ -1,0 +1,26 @@
+        {% extends "healthier/base.html" %}
+        {% block middle %}
+        {% load static %}
+        <section class="page-section text-white background-results">
+            <div class="row justify-content-center">
+                <div class="col-4 text-center result" style='background:url("{{ img_url }}"); background-size: contain; background-repeat: no-repeat; background-position: center;'>
+                    <h1><mark>{{ searched }}</mark></h1>
+                </div>
+            </div>
+        </section>
+        <section class="page-section bg-primary text-white">
+            <div class="row text-center justify-content-center">
+                <div class="col-lg-12 text-center">
+                    <h2 class="mb-4">Vous pouvez remplacer cet aliment par :</h2>
+                    <hr class="divider light my-4" />
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                {% for food in food_items %}
+                <div class="col-sm-4 col-md-4 text-center">
+                    <a class="text-dark" href="{% url "healthier:fooditem" %}?food_id={{food.id}}"><h1>{{food.id}}</h1></a>
+                </div>  
+            {% endfor %}    
+            </div>
+        </section>
+        {% endblock middle %}

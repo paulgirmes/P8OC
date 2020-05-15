@@ -1,0 +1,27 @@
+        {% extends "healthier/base.html" %}
+        {% block middle %}
+        {% load static %}
+        <section class="page-section text-white background-results">
+            <div class="row justify-content-center">
+                <div class="col-4 text-center result" style='background:url("{{ img_url }}"); background-size: contain; background-repeat: no-repeat; background-position: center;'>
+                    <h1><mark>{{ name }}</mark></h1>
+                </div>
+            </div>
+        </section>
+        <section class="page-section bg-primary text-white">
+            <div class="row text-center justify-content-center">
+                <div class="col-lg-6">
+                    <h1>nutriscore : {{nutriscore}}</h1>
+                </div>
+                <div class="col-lg-6">
+                    <h1>nutriscore : {{energy_kcal_100gr}}</h1>
+                </div>
+            <div class="row text-center">
+                <div class="col-lg-12">
+                    <a class="text-dark" href="{{ openfoodfacts_url }}" title="lien vers la page OpenFoodFacts">
+                        <h2 class="mb-4">Voir la fiche d'OpenFoodFacts</h2>
+                    </a>
+                </div>
+            </div>
+        </section>
+        {% endblock middle %}

@@ -1,0 +1,20 @@
+        {% extends "healthier/base.html" %}
+        {% block middle %}
+        {% load static %}
+        <section class="page-section h-100 bg-Caramel_mou background-main text-white">
+            <div class="row justify-content-center">
+                <div class="col-4 text-center">
+                    <h1>Mes aliments</h1>
+                </div>
+            </div>
+        </section>
+        <section class="page-section bg-primary text-white">
+            <div class="row">
+                {% for item in food_items %}
+                    <div class="col-sm-4 col-md-4 text-center">
+                        {{item}}
+                    </div>  
+                {% endfor %}    
+            </div>
+        </section>
+        {% endblock middle %}

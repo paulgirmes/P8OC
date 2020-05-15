@@ -43,10 +43,49 @@ hr.light {
 .owner{
   max-width: 150px;
 }
-.navicon{
-  max-height: 3em;
-  vertical-align: middle;
-}
 .bg-moules-frites{
   background-color: $moules-frites;
+}
+.bg-rooibos_chocolat{
+  background-color: $rooibos_chocolat;
+}
+.bg-bonbon_rigolo{
+  background-color: $bonbon_rigolo;
+}
+.bg-Caramel_mou{
+  background-color: $Caramel_mou;
+}
+.bg-Biscuit_trempe{
+  background-color: $Biscuit_trempe; 
+}
+.background-main{
+  max-height: 30%;
+  background: linear-gradient(to bottom, #{fade-out($Caramel_mou, .1)} 0%,#{fade-out($Caramel_mou, .3)} 100%), url('../assets/img/kawin-harasai-k60JspcBwKE-unsplash.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  background-size: cover;
+}
+.background-results{
+  background: linear-gradient(to bottom, #{fade-out($Caramel_mou, .1)} 0%,#{fade-out($Caramel_mou, .3)} 100%);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  background-size: contain;
+  padding-top: 8rem;
+  padding-bottom: calc(8rem - #{$navbar-height});
+}
+.result{
+  padding-top: 11rem;
+  padding-bottom: calc(5.5rem - #{$navbar-height});
+}
+mark{
+  padding: 0em;
+  color:inherit;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+.icon{
+  max-height: 3em;
+  vertical-align: middle;
+  width: 50px
 }

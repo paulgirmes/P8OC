@@ -28,4 +28,5 @@ urlpatterns = [
     path("resultats", views.results, name='results'),
     path("contact", views.contact, name="contact"),
     path("mentions_legales", views.general_conditions, name="general_conditions"),
+    path("food_item", views.fooditem, name="fooditem")
 ]
