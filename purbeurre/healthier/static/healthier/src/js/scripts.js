@@ -56,3 +56,7 @@
   });
 
 })(jQuery); // End of use strict
+$('#ModalScrollable').modal(show=true);
+function redirect() {
+  location.replace("https://www.cnil.fr/")
+}

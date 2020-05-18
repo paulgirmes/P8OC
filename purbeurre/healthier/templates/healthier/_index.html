@@ -83,4 +83,29 @@
                         </div>
                 </div>
         </section>
+
+
+<!-- Modal -->
+<div class="modal fade" data-backdrop="static" id="ModalScrollable" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalScrollableTitle">TRAITEMENT DE VOS DONNEES</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            Nous collectons votre e-mail et prénom afin de créer votre compte. Nous collectons également que les données transmises via formulaire pour effectuer les recherches via le site tiers "OpenFoodFacts". Si vous ne souhaitez pas que nous collections ces données veuillez cliquer la case "je refuse" ci-dessous.<br><hr>
+            
+            Vous pouvez accéder aux données vous concernant, les rectifier ou les faire effacer ici : <a href="{% url "healthier:contact" %}">contactez-nous.</a>. Vous disposez également d'un droit à la portabilité et d’un droit à la limitation du traitement de vos données (Consultez le site cnil.fr pour plus d’informations sur vos droits).  
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="redirect()">Je refuse</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal">J'accepte</button>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
         {% endblock middle %}

@@ -9,7 +9,11 @@ def home(request):
     return render(request, "healthier/_index.html", context)
 
 def myaccount(request):
-    return HttpResponse('myaccount')
+    message= {
+        "user_name": "Paul",
+        "user_mail": "paul@qqqq.fr"
+    }
+    return render(request, "healthier/_user_page.html", message)
 
 def myfoods(request):
     message ={"food_items":["item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3"]}
@@ -39,5 +43,5 @@ def fooditem(request):
     }
     return render(request, "healthier/_food_item.html", message)
 
-def general_conditions(resquest):
-    return HttpResponse("legal")
+def general_conditions(request):
+    return render(request, "healthier/_legal_content.html")
