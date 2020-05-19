@@ -10043,6 +10043,11 @@ mark {
   width: 50px;
 }
 
+.nav-search {
+  margin-top: 3px;
+  margin-right: 10px;
+}
+
 #mainNav {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
   background-color: #fff;

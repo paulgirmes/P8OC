@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Store(models.Model):
@@ -31,16 +32,9 @@ class Food_item(models.Model):
     stores = models.ManyToManyField(Store)
     Brands = models.ManyToManyField(Brand)
     categories = models.ManyToManyField(Category)
+    favoris = models.ManyToManyField(User)
 
 
     def __repr__(self):
         print(self.name + " / " + self.open_food_facts_url)
-
-class User(models.Model):
-    name = models.CharField(max_length=50)
-    e_mail = models.EmailField(max_length=200, unique=True)
-    favoris = models.ManyToManyField(Food_item)
-
-    def __repr__(self):
-        print(self.name)
 
