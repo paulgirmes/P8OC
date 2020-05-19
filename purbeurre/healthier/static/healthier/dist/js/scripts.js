@@ -61,7 +61,9 @@
   });
 
 })(jQuery); // End of use strict
-$('#ModalScrollable').modal(show=true);
 function redirect() {
-  location.replace("https://www.cnil.fr/")
+  var referrer = document.referrer;
+  location.replace(referrer);
+  alert("Ce site requiert votre acceptation pour pouvoir fonctionner correctement.");
 }
+$('#ModalScrollable').modal(show=true);
