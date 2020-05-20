@@ -41,7 +41,7 @@ class Command(BaseCommand):
             # populate DB
             pass
 
-    def get_fooditems(self, categorie, number=500, fields=["url","id"]):
+    def get_fooditems(self, categorie, number=500, fields=["url"]):
         #returns all fooditems with nova and nutri in a list max number=1000
         self.stdout.write("beginning downloading items for category {}".format(categorie))
         request = requests.get("https://fr.openfoodfacts.org/cgi/search.pl",
