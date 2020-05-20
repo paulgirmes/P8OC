@@ -3,9 +3,11 @@
         {% load static %}
         <section class="page-section text-white background-results">
             <div class="row justify-content-center">
-                <div class="col-4 text-center result" style='background:url("{{ img_url }}"); background-size: contain; background-repeat: no-repeat; background-position: center;'>
-                    <h1><mark>{{ searched }}</mark></h1>
+                <div class="col-4 text-center result" style='background:url("{{ img_url }}"); background-size: contain; background-repeat: no-repeat; background-position: center;'>  
                 </div>
+            </div>
+            <div class="row justify-content-center">
+                <h1>{{ searched }}</h1>
             </div>
         </section>
         <section class="page-section bg-primary text-white">

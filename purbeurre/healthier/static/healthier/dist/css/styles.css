@@ -10048,6 +10048,11 @@ mark {
   margin-right: 10px;
 }
 
+input[name="recherche_2_%s"] {
+  background-color: #345a61;
+  border-color: #345a61;
+}
+
 #mainNav {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
   background-color: #fff;

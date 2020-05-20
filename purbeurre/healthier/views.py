@@ -5,12 +5,12 @@ from .forms import FoodQuery
 
 def home(request):
     form = FoodQuery(auto_id="recherche_%s")
-    form1 = FoodQuery(auto_id="recherche_2%s")
+    form1 = FoodQuery(auto_id="recherche_2_%s")
     context={'form': form, 'form1': form1}
     return render(request, "healthier/_index.html", context)
 
 def myaccount(request):
-    form1 = FoodQuery(auto_id="recherche_2%s")
+    form1 = FoodQuery(auto_id="recherche_2_%s")
     message= {
         'form1': form1,
         "user_name": "Paul",
@@ -19,7 +19,7 @@ def myaccount(request):
     return render(request, "healthier/_user_page.html", message)
 
 def myfoods(request):
-    form1 = FoodQuery(auto_id="recherche_2%s")
+    form1 = FoodQuery(auto_id="recherche_2_%s")
     message ={
         'form1': form1,
         "food_items":["item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3"]}
@@ -29,7 +29,7 @@ def logout(request):
     return HttpResponse('logout')
 
 def results(request):
-    form1 = FoodQuery(auto_id="recherche_2%s")
+    form1 = FoodQuery(auto_id="recherche_2_%s")
     query = request.GET['fooditem']
     message = {
         'form1': form1,
@@ -40,14 +40,14 @@ def results(request):
     return render(request, "healthier/_results.html", message)
 
 def contact(request):
-    form1 = FoodQuery(auto_id="recherche_2%s")
+    form1 = FoodQuery(auto_id="recherche_2_%s")
     message = {
         'form1': form1,
         }
     return render(request, "healthier/_contact.html", message)
 
 def fooditem(request):
-    form1 = FoodQuery(auto_id="recherche_2%s")
+    form1 = FoodQuery(auto_id="recherche_2_%s")
     message = {
         'form1': form1,
         "name": "pates",
@@ -59,7 +59,7 @@ def fooditem(request):
     return render(request, "healthier/_food_item.html", message)
 
 def general_conditions(request):
-    form1 = FoodQuery(auto_id="recherche_2%s")
+    form1 = FoodQuery(auto_id="recherche_2_%s")
     message = {
         'form1': form1,
         }

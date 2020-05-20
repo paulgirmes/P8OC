@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'healthier.apps.HealthierConfig',
     'debug_toolbar',
+    'crispy_forms',
     
 ]
 
@@ -130,3 +131,4 @@ STATIC_URL = '/static/'
 
 INTERNAL_IPS = ['127.0.0.1']
 
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
