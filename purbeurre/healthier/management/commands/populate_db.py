@@ -35,7 +35,6 @@ class Command(BaseCommand):
                 categories = self.parse(categories)
                 # download the food items from OFF that have nutriscore and novagrade
                 for categorie in categories:
-                    if 
                     food_items = self.get_fooditems(categorie)
                     self.populate_db(food_items)
                     self.stdout.write("food items for category {} reviewed".format(categorie))
