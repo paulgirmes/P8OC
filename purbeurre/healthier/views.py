@@ -1,23 +1,34 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
-
+from django.contrib.auth.decorators import login_required
 from .forms import FoodQuery
+from django.contrib.auth import logout
+from django.urls import reverse
+
+
 
 def home(request):
     form = FoodQuery(auto_id="recherche_%s")
     form1 = FoodQuery(auto_id="recherche_2_%s")
     context={'form': form, 'form1': form1}
+    if not request.user.is_authenticated:
+        context.update({"logged":"False"})
+    else:
+        context.update({"logged":"True"})
     return render(request, "healthier/_index.html", context)
 
+@login_required(login_url="healthier:login")
 def myaccount(request):
     form1 = FoodQuery(auto_id="recherche_2_%s")
-    message= {
+    context = {
+        "logged": "True",
         'form1': form1,
         "user_name": "Paul",
         "user_mail": "paul@qqqq.fr",
     }
-    return render(request, "healthier/_user_page.html", message)
+    return render(request, "healthier/_user_page.html", context)
 
+@login_required(login_url="healthier:login")
 def myfoods(request):
     form1 = FoodQuery(auto_id="recherche_2_%s")
     message ={
@@ -25,8 +36,17 @@ def myfoods(request):
         "food_items":["item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3"]}
     return render(request, "healthier/_my_saved_foods.html", message)
 
-def logout(request):
-    return HttpResponse('logout')
+
+def login(request):
+    if not request.user.is_authenticated:
+        form1 = FoodQuery(auto_id="recherche_2_%s")
+        message ={
+        'form1': form1,
+        }
+        return render(request, "healthier/_login_signin.html", message)
+    else:
+        logout(request)
+        return redirect(reverse("healthier:home"))
 
 def results(request):
     form1 = FoodQuery(auto_id="recherche_2_%s")

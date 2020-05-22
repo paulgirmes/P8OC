@@ -91,5 +91,8 @@
       </div>
     </div>
   </div>
- 
         {% endblock middle %}
+        {% block script_modal %}
+    <script>var logged = "{{ logged }}";</script>
+    <script src={% static "healthier/dist/js/modal.js" %}></script>
+        {% endblock script_modal %}
