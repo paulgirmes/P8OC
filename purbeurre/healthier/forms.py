@@ -6,7 +6,7 @@ from django.contrib.auth import  password_validation, login
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField
 from django.db.utils import IntegrityError
 from django.forms import ModelForm, ValidationError
-
+from .models import Food_item
 
 class FoodQuery(forms.Form):
 
@@ -23,7 +23,14 @@ class FoodQuery(forms.Form):
         self.helper.form_class = 'form-inline nav-search'
         self.helper.form_method = 'get'
         self.helper.form_action = "healthier:results"
-        self.helper.add_input(Submit(self.auto_id, 'chercher'))
+        self.helper.add_input(Submit(self.auto_id, "chercher"))
+        self.searched_food_item = False
+
+    class Meta:
+        model = Food_item
+        fields = ("name")
+    def get_searched_food_Item(self):
+        self.cleaned_data.get("food_item")
 
 class Signin(UserCreationForm):
     

@@ -20,7 +20,7 @@
             <div class="row justify-content-center">
                 {% for food in food_items %}
                 <div class="col-sm-4 col-md-4 text-center">
-                    <a class="text-dark" href="{% url "healthier:fooditem" %}?food_id={{food.id}}"><h1>{{food.id}}</h1></a>
+                    <a class="text-dark" href="{% url "healthier:fooditem" %}?food_id={{food.id}}"><h1>{{food.name}}</h1></a>
                 </div>  
             {% endfor %}    
             </div>
