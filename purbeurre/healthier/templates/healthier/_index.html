@@ -68,7 +68,7 @@
                 </div>
         </section>
 
-
+        {% if user.is_authenticated  == False %}
 <!-- Modal -->
 <div class="modal fade" data-backdrop="static" id="ModalScrollable" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable" role="document">
@@ -91,8 +91,5 @@
       </div>
     </div>
   </div>
+        {% endif %}
         {% endblock middle %}
-        {% block script_modal %}
-    <script>var logged = "{{ logged }}";</script>
-    <script src={% static "healthier/dist/js/modal.js" %}></script>
-        {% endblock script_modal %}

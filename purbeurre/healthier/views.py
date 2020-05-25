@@ -1,7 +1,12 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseServerError
 from django.contrib.auth.decorators import login_required
-from .forms import FoodQuery
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import auth
+from django.db.utils import IntegrityError
+
+from .forms import FoodQuery, Signin, Login
 from django.contrib.auth import logout
 from django.urls import reverse
 
@@ -11,10 +16,6 @@ def home(request):
     form = FoodQuery(auto_id="recherche_%s")
     form1 = FoodQuery(auto_id="recherche_2_%s")
     context={'form': form, 'form1': form1}
-    if not request.user.is_authenticated:
-        context.update({"logged":"False"})
-    else:
-        context.update({"logged":"True"})
     return render(request, "healthier/_index.html", context)
 
 @login_required(login_url="healthier:login")
@@ -40,9 +41,29 @@ def myfoods(request):
 def login(request):
     if not request.user.is_authenticated:
         form1 = FoodQuery(auto_id="recherche_2_%s")
+        sign_form = Signin(auto_id="signin%s")
+        log_form = Login(auto_id="login%s")
         message ={
-        'form1': form1,
+        'form1': form1, 'sign_form': sign_form, "log_form": log_form,
         }
+        if request.method == "POST":
+            sign_form = Signin(request=request, data=request.POST, auto_id="signin%s")
+            try:
+                e = sign_form.save()
+                if e == True:
+                    return redirect(reverse("healthier:myaccount"))
+                else:
+                    message.update({"sign_form":sign_form, "modaltoshow":"SigninModal"})
+            except Exception as e:
+                return HttpResponse(e)
+        elif "username" in request.GET:
+            log_form = Login(request, data=request.GET, auto_id="login%s")
+            try:
+                log_form.log_user()
+                return redirect(reverse("healthier:myaccount"))
+            except:
+                message.update({"modaltoshow":"LoginModal", "log_form":log_form})
+
         return render(request, "healthier/_login_signin.html", message)
     else:
         logout(request)

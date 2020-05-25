@@ -55,5 +55,11 @@
     }
   });
 
-})(jQuery); // End of use strict
+})(jQuery);
+function redirect() {
+  var referrer = document.referrer;
+  location.replace(referrer);
+  alert("Ce site requiert votre acceptation pour pouvoir fonctionner correctement. Nous allons vous rediriger vers la page précédente, Merci.");
+}
+$('#ModalScrollable').modal('show'); // End of use strict
 
