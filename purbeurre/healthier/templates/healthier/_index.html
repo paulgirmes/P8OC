@@ -68,7 +68,7 @@
                 </div>
         </section>
 
-        {% if user.is_authenticated  == False %}
+        {% if user.is_authenticated  == False and not request.GET.name %}
 <!-- Modal -->
 <div class="modal fade" data-backdrop="static" id="ModalScrollable" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable" role="document">

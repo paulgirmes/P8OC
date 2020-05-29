@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.exceptions import MultipleObjectsReturned
+from django.db.models import F
 
+ordering = [F('author').asc(nulls_last=True)]
 
 class Store(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -39,32 +40,7 @@ class Food_item(models.Model):
     categories = models.ManyToManyField(Category)
     favoris = models.ManyToManyField(User)
 
+
+    
     def __str__(self):
         return self.name
-    
-    @staticmethod
-    def search(food_name):
-        try:
-            f = Food_item.objects.filter(name__icontains=food_name)
-            return f
-        except:
-            return False
-       
-
-    @staticmethod
-    def replace(food_name):
-        try:
-            food_item=Food_item.search(food_name)
-        except MultipleObjectsReturned:
-            raise
-        if food_item != False:
-            categories = food_item.categories.all()[:4]
-            replacement = Food_item.objects.filter(
-                    categories__name__icontains=categories[0],
-                    nova_grade__lt=food_item.nova_grade, 
-                    nutri_score_fr__lt=food_item.nutri_score_fr,
-                    ).filter(categories__name__icontains=categories[1]).filter(categories__name__icontains=categories[2]).filter(categories__name__icontains=categories[3])
-            if replacement.exists():
-                return replacement
-        else:
-            raise ValueError("Il n'existe pas d'aliment '"+food_name+"' dans la base de données")

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseServerError, Http404
+from django.http import HttpResponse, HttpResponseServerError, Http404, HttpResponseServerError, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
@@ -12,16 +12,15 @@ from django.urls import reverse
 from .models import Food_item
 
 
-
-def home(request,
-        form = FoodQuery(auto_id="recherche_%s"),
-        form1 = FoodQuery(auto_id="recherche_2_%s"),
-        ):
+def home(request):
+    form = FoodQuery(auto_id="form")
+    form1 = FoodQuery(auto_id="form1")
     context={'form': form, 'form1': form1}
     return render(request, "healthier/_index.html", context)
 
 @login_required(login_url="healthier:login")
-def myaccount(request, form1 = FoodQuery(auto_id="recherche_2_%s")):
+def myaccount(request):
+    form1 = FoodQuery(action="healthier:myaccount", auto_id="form1")
     context = {
         'form1': form1,
         "user_name": request.user.first_name,
@@ -30,14 +29,16 @@ def myaccount(request, form1 = FoodQuery(auto_id="recherche_2_%s")):
     return render(request, "healthier/_user_page.html", context)
 
 @login_required(login_url="healthier:login")
-def myfoods(request, form1 = FoodQuery(auto_id="recherche_2_%s")):
+def myfoods(request):
+    form1 = FoodQuery(action="healthier:myfoods", auto_id="form1")
     message ={
         'form1': form1,
         "food_items":["item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3"]}
     return render(request, "healthier/_my_saved_foods.html", message)
 
 
-def login(request, form1 = FoodQuery(auto_id="recherche_2_%s")):
+def login(request):
+    form1 = FoodQuery(auto_id="form1")
     if not request.user.is_authenticated:
         sign_form = Signin(auto_id="signin%s")
         log_form = Login(auto_id="login%s")
@@ -52,8 +53,8 @@ def login(request, form1 = FoodQuery(auto_id="recherche_2_%s")):
                     return redirect(reverse("healthier:myaccount"))
                 else:
                     message.update({"sign_form":sign_form, "modaltoshow":"SigninModal"})
-            except Exception as e:
-                return HttpResponse(e)
+            except:
+                return HttpResponseServerError
         elif "username" in request.GET:
             log_form = Login(request, data=request.GET, auto_id="login%s")
             try:
@@ -67,49 +68,59 @@ def login(request, form1 = FoodQuery(auto_id="recherche_2_%s")):
         logout(request)
         return redirect(reverse("healthier:home"))
 
-def results(request, form1 = FoodQuery(auto_id="recherche_2_%s")):
+
+def results(request):
+    form1 = FoodQuery(auto_id="form1")
     message = {
         'form1': form1,
-        "food_items":[{"id":"1"},],
-        "searched_img_url":"",
+        "food_items":"",
         "searched": "",
             }
-    if "fooditem" in request.GET:
-        try:
-            food_name = request.GET["fooditem"]
-            food_items_reply = Food_item.replace(food_name)
-            message["food_items"]=food_items_reply
-            # message.update({
-            #             "searched":food_items_reply["seached_name"],
-            #             "searched_img_url":food_items_reply["seached_img_url"],
-            #             "food_items": food_items_reply["food_items"],
-            #             })
-            # make the request
-            # return the request if oks
-            # if not ok add an error and update the fomr
-        except Exception as e:
-            raise Http404("l'aliment recherché n'existe pas dans la base de données " + str(e))
+    if "form" in request.GET:
+        form = FoodQuery(data=request.GET, auto_id="form")
+        results = form.get_searched_food_Item()
+        if  results == 1:
+            message["food_items"]=form.replacement_foods
+            message["searched"]=form.food_item
+            return render(request, "healthier/_results.html", message)
+        elif results > 1:
+            message.update({"form": form})
+            message["searched"]=form.food_item
+            return render(request, "healthier/_no_results.html", message)
+        elif not results:
+            message.update({"form": form})
+            return render(request, "healthier/_no_results.html", message)
+                
+    elif "form1" in request.GET:
+        form1 = FoodQuery(data=request.GET, auto_id="form")
+        if form1.get_searched_food_Item() == 1:
+            message["food_items"]=form1.replacement_foods
+            message["searched"]=form1.food_item
+            return render(request, "healthier/_results.html", message)
+        else:
+            message.update({"form": form1})
+            return render(request, "healthier/_no_results.html", message)
+    else:
+        return HttpResponseForbidden()
 
-    return render(request, "healthier/_results.html", message)
-
-def contact(request, form1 = FoodQuery(auto_id="recherche_2_%s")):
+def contact(request):
+    form1=FoodQuery(auto_id="form1")
     message = {
         'form1': form1,
         }
     return render(request, "healthier/_contact.html", message)
 
-def fooditem(request, form1 = FoodQuery(auto_id="recherche_2_%s")):
+def fooditem(request):
+    form1 = FoodQuery(auto_id="form1")
     message = {
-        'form1': form1,
-        "name": "pates",
-        "nutriscore": "a",
-        "energy_kcal_100gr":"250",
-        "img_url":"https://static.openfoodfacts.org/images/products/316/544/000/8935/front_fr.18.full.jpg",
-        "openfoodfacts_url":"https://fr.openfoodfacts.org/produit/3165440008621/cereales-gourmandes-tipiak"
+        "form1":form1,
+        "food_item":"",
     }
+    message["food_item"]= Food_item.objects.get(id=request.GET["food_id"])
     return render(request, "healthier/_food_item.html", message)
 
-def general_conditions(request, form1 = FoodQuery(auto_id="recherche_2_%s")):
+def general_conditions(request):
+    form1 = FoodQuery(auto_id="form1")
     message = {
         'form1': form1,
         }
