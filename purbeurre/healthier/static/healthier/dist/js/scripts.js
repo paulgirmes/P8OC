@@ -61,10 +61,80 @@
   });
 
 })(jQuery);
+
 function redirect() {
   var referrer = document.referrer;
   location.replace(referrer);
   alert("Ce site requiert votre acceptation pour pouvoir fonctionner correctement. Nous allons vous rediriger vers la page précédente, Merci.");
 }
-$('#ModalScrollable').modal('show'); // End of use strict
+$('#ModalScrollable').modal('show');
+
+// function to retrieve CSRF Token
+function getCookie(name) {
+  var cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+      var cookies = document.cookie.split(';');
+      for (var i = 0; i < cookies.length; i++) {
+          var cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+          }
+      }
+  }
+  return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+//define AJAX request header
+function csrfSafeMethod(method) {
+  // these HTTP methods do not require CSRF protection
+  return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+  beforeSend: function(xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+      }
+  }
+});
+//used to post a save request
+$(".save").click(function(event)
+        {
+        event.preventDefault();
+        //sending request to server : if answer status is ok add the answwer map and the wiki,
+        //else only add the answer from server
+        $.ajax(
+            {
+            url: document.location.pathname,
+            data: $('.save').value.serialize(),
+            type: 'POST',
+            success: function(response) 
+                {
+                var answer_obj = JSON.parse(response)
+                if (answer_obj.status == "False" && answer_obj.result == "already existing")
+                    {              
+                    $("#save-modal-header").append('<h5 class="modal-title" id="save-modal-title">Cet Aliment existe déjà dans vos favoris !</h5>');
+                    $("#save-modal").modal('show');
+                    }
+                else if (answer_obj.status == "False" && answer_obj.result == "unforeseen exception")
+                    {
+                    $("#save-modal-header").append('<h5 class="modal-title" id="save-modal-title">Aliment non sauvegardé : une erreur inatendue s"est produite.</h5>');
+                    $("#save-modal").modal('show');
+                    }
+                else if (answer_obj.status == "True")
+                    {
+                    $("#save-modal-header").append('<h5 class="modal-title" id="save-modal-title">Aliment sauvegardé dans vos favoris.</h5>');
+                    $("#save-modal").modal('show');
+                    }
+                
+                },
+            error: function(error) 
+                {
+                $("#save-modal-header").append('<h5 class="modal-title" id="save-modal-title">"La requette a échouée, veuillez vérifier votre connexion"</h5>');
+                $("#save-modal").modal('show');
+                }
+            });
+
+    });
 

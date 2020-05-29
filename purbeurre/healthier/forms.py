@@ -10,18 +10,14 @@ from django.forms import ModelForm, ValidationError
 from .models import Food_item
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
-class FoodQuery(forms.Form):
+class FoodQuery(forms.Form, ModelForm):
 
-    name=forms.CharField(
-            required=True,
-            )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, align="align-self-baseline", data=None, auto_id=None):
+        super().__init__(*args, data=data, auto_id=auto_id)
         self.helper = FormHelper()
         self.helper.form_show_labels = False
         self.helper.form_id = self.auto_id
-        self.helper.form_class = 'col-xs-10 col-sm-8 col-md-6 justify-content-center form-inline nav-search'
+        self.helper.form_class = align + ' justify-content-center mx-sm-3 form-inline nav-search'
         self.helper.form_method = 'get'
         self.helper.form_action = "healthier:results"
         self.helper.add_input(Submit(self.auto_id, "chercher"))
@@ -42,10 +38,16 @@ class FoodQuery(forms.Form):
                 else:
                     self.add_error(None, "il n'existe pas d'aliments de remplacement plus sain dans notre base de donnée")
                     return False
-            elif Items_found > 1:
+            elif Items_found > 1 and Items_found <= 100:
                 self.add_error(None, "Il existe " + str(Items_found)+
-                                " aliments contenant '"+self.cleaned_data.get("name")+"'"
-                                " merci de préciser votre recherche"
+                                " aliments contenant '"+self.cleaned_data.get("name")+"' !"
+                                " merci de choisir dans la liste ci dessous."
+                                )
+                return Items_found
+            elif Items_found > 100:
+                self.add_error(None, "Il existe " + str(Items_found)+
+                                " aliments contenant '"+self.cleaned_data.get("name")+"' !"
+                                " merci de préciser votre recherche."
                                 )
                 return Items_found
             elif Items_found == 0:

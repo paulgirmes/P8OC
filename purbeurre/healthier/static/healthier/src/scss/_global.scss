@@ -93,7 +93,67 @@ mark{
   margin-top: 3px;
   margin-right: 10px;
 }
+.nutri-score{
+  height: auto;
+  width: 150px;
+  position: absolute;
+  left: 60%;
+  bottom: 20%;
+}
 input[name="recherche_2_%s"] {
   background-color: $moules-frites;
   border-color: $moules-frites;
+}
+.food-item-img{
+  max-height: 150px;
+  width: 150px;
+}
+h1, h2, h3, h4, h5, h6{
+  word-wrap: break-word;
+}
+.space_top{
+display: inline-block;
+margin-top: 10px;
+}
+
+header.resulthead{
+  padding-top: 10rem;
+  padding-bottom: calc(10rem - #{$navbar-height});
+  // replace the masthead.jpg image in the /assets/img directory to change the image
+  // if the image name change, make sure to update the url path below!
+  background: linear-gradient(to bottom, #{fade-out($Caramel_mou, .1)} 0%,#{fade-out($Caramel_mou, .3)} 100%), url('../assets/img/kawin-harasai-k60JspcBwKE-unsplash.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  background-size: cover;
+  
+  h1 {
+    font-size: 2.25rem;
+    color: $rooibos_chocolat;
+  }
+
+  p{
+    color: $light;
+  }
+
+  @include media-breakpoint-up(lg) {
+    height: 75vh;
+    min-height: 30rem;
+    padding-top: $navbar-height;
+    padding-bottom: 0;
+    justify-content: center;
+    align-items: center;
+    p {
+      font-size: 1.15rem;
+    }
+    h1 {
+      font-size: 3rem;
+    }
+
+  }
+  @include media-breakpoint-up(xl) {
+    h1 {
+      font-size: 3.5rem;
+    }
+  }
 }

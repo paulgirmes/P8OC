@@ -10048,9 +10048,69 @@ mark {
   margin-right: 10px;
 }
 
+.nutri-score {
+  height: auto;
+  width: 150px;
+  position: absolute;
+  left: 60%;
+  bottom: 20%;
+}
+
 input[name="recherche_2_%s"] {
   background-color: #345a61;
   border-color: #345a61;
+}
+
+.food-item-img {
+  max-height: 150px;
+  width: 150px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  word-wrap: break-word;
+}
+
+.space_top {
+  display: inline-block;
+  margin-top: 10px;
+}
+
+header.resulthead {
+  padding-top: 10rem;
+  padding-bottom: calc(10rem - 4.5rem);
+  background: linear-gradient(to bottom, rgba(222, 148, 64, 0.9) 0%, rgba(222, 148, 64, 0.7) 100%), url("../assets/img/kawin-harasai-k60JspcBwKE-unsplash.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  background-size: cover;
+}
+header.resulthead h1 {
+  font-size: 2.25rem;
+  color: #c45525;
+}
+header.resulthead p {
+  color: #f8f9fa;
+}
+@media (min-width: 992px) {
+  header.resulthead {
+    height: 75vh;
+    min-height: 30rem;
+    padding-top: 4.5rem;
+    padding-bottom: 0;
+    justify-content: center;
+    align-items: center;
+  }
+  header.resulthead p {
+    font-size: 1.15rem;
+  }
+  header.resulthead h1 {
+    font-size: 3rem;
+  }
+}
+@media (min-width: 1200px) {
+  header.resulthead h1 {
+    font-size: 3.5rem;
+  }
 }
 
 #mainNav {

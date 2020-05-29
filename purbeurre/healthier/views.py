@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseServerError, Http404, HttpResponseServerError, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
@@ -20,7 +21,7 @@ def home(request):
 
 @login_required(login_url="healthier:login")
 def myaccount(request):
-    form1 = FoodQuery(action="healthier:myaccount", auto_id="form1")
+    form1 = FoodQuery(auto_id="form1")
     context = {
         'form1': form1,
         "user_name": request.user.first_name,
@@ -30,10 +31,13 @@ def myaccount(request):
 
 @login_required(login_url="healthier:login")
 def myfoods(request):
-    form1 = FoodQuery(action="healthier:myfoods", auto_id="form1")
+    form1 = FoodQuery(auto_id="form1")
     message ={
         'form1': form1,
-        "food_items":["item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3","item1", "item2", "item3"]}
+        "food_items": "",
+        }
+    favorites = Food_item.get_favorites(request.user.username)
+    message["food_items"]=favorites
     return render(request, "healthier/_my_saved_foods.html", message)
 
 
@@ -77,31 +81,36 @@ def results(request):
         "searched": "",
             }
     if "form" in request.GET:
-        form = FoodQuery(data=request.GET, auto_id="form")
+        form = FoodQuery(data=request.GET, auto_id="form", align="")
         results = form.get_searched_food_Item()
         if  results == 1:
             message["food_items"]=form.replacement_foods
             message["searched"]=form.food_item
-            return render(request, "healthier/_results.html", message)
+            
         elif results > 1:
             message.update({"form": form})
             message["searched"]=form.food_item
-            return render(request, "healthier/_no_results.html", message)
+            
         elif not results:
             message.update({"form": form})
-            return render(request, "healthier/_no_results.html", message)
+            
                 
     elif "form1" in request.GET:
-        form1 = FoodQuery(data=request.GET, auto_id="form")
+        form1 = FoodQuery(data=request.GET, auto_id="form", align="")
         if form1.get_searched_food_Item() == 1:
             message["food_items"]=form1.replacement_foods
             message["searched"]=form1.food_item
-            return render(request, "healthier/_results.html", message)
+           
         else:
             message.update({"form": form1})
-            return render(request, "healthier/_no_results.html", message)
-    else:
-        return HttpResponseForbidden()
+            
+    elif request.method == "POST":
+        result = Food_item.save_favorites(request.POST["value"], request.user)
+        return HttpResponse(json.dumps(result))
+
+
+
+    return render(request, "healthier/_results.html", message)
 
 def contact(request):
     form1=FoodQuery(auto_id="form1")

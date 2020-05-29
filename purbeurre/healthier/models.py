@@ -1,8 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models import F
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
-ordering = [F('author').asc(nulls_last=True)]
 
 class Store(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -44,3 +43,27 @@ class Food_item(models.Model):
     
     def __str__(self):
         return self.name
+    
+    @staticmethod
+    def get_favorites(username):
+        favorites = Food_item.objects.filter(favoris__username=username)
+        if favorites.exists():
+            return favorites
+        else:
+            return False
+    @staticmethod
+    def save_favorites(food_id, user):
+        try:
+            f=Food_item.objects.get(id=food_id)
+            f.favoris.get(username=user)
+            return {"result":"already existing", "status":False}                      
+        except ObjectDoesNotExist:
+            try:
+                f.favoris.add(user)
+                return {"result":"added", "status":True}
+            except:
+                return {"result":"unforeseen exception", "status":False}
+        else:
+            return {"result":"unforeseen exception", "status":False} 
+        
+        
