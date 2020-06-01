@@ -73,40 +73,6 @@ def login(request):
         return redirect(reverse("healthier:home"))
 
 
-def results(request):
-    form1 = FoodQuery(auto_id="form1")
-    message = {
-        'form1': form1,
-        "food_items":"",
-        "searched": "",
-            }
-    if "form" in request.GET:
-        form = FoodQuery(data=request.GET, auto_id="form", align="")
-        results = form.get_searched_food_Item()
-        if  results == 1:
-            message["food_items"]=form.replacement_foods
-            message["searched"]=form.food_item
-            
-        elif results > 1:
-            message.update({"form": form})
-            message["searched"]=form.food_item
-            
-        elif not results:
-            message.update({"form": form})
-            
-                
-    elif "form1" in request.GET:
-        form1 = FoodQuery(data=request.GET, auto_id="form", align="")
-        if form1.get_searched_food_Item() == 1:
-            message["food_items"]=form1.replacement_foods
-            message["searched"]=form1.food_item
-           
-        else:
-            message.update({"form": form1})
-            
-    elif request.method == "POST":
-        result = Food_item.save_favorites(request.POST["value"], request.user)
-        return HttpResponse(json.dumps(result))
 
 
 
@@ -134,3 +100,51 @@ def general_conditions(request):
         'form1': form1,
         }
     return render(request, "healthier/_legal_content.html", message)
+
+def results(request):
+    form1 = FoodQuery(auto_id="form1")
+    message = {
+        'form1': form1,
+        "food_items":"",
+        "searched": "",
+            }
+    if "form" in request.GET or "form1" in request.GET:
+        form = FoodQuery(data=request.GET, auto_id="form")
+        if form.is_valid() :
+            results = Food_item.get_searched_food_Item(food_name=form.cleaned_data.get("name"))          
+        else:
+            form.add_error(None,"Champ Invalide")
+            message.update({"form": form})
+            return render(request, "healthier/_no_results.html", message)
+    elif "id" in request.GET:
+        results = Food_item.get_searched_food_Item(food_id=request.GET["id"])
+    elif request.method == "POST":
+        result = Food_item.save_favorites(request.POST["value"], request.user)
+        return HttpResponse(json.dumps(result))
+    
+    if  results["status"] == "ok":
+        message["food_items"]=results["replacement_items"]
+        message["searched"]=results["to_be_replaced_item"]
+        return render(request, "healthier/_results.html", message)
+
+    elif results["status"] == "choice_to_make":
+        if results["to_be_replaced_item"].count() < 100:
+            form.add_error(None, "Il existe " + str(results["to_be_replaced_item"].count())+
+                            " aliments contenant '"+form.cleaned_data.get("name")+"' !"
+                            " merci de choisir l'aliment à remplacer dans la liste ci dessous."
+                            )
+        else:
+            form.add_error(None, "Il existe " + str(results["to_be_replaced_item"].count())+
+                            " aliments contenant '"+form.cleaned_data.get("name")+"' !"
+                            " merci de préciser votre recherche."
+                            )
+        message.update({"form": form})
+        message["searched"]=results["to_be_replaced_item"]        
+        
+    elif results["status"] == "not_found":
+        form.add_error(None, form.cleaned_data.get("name") + " est introuvable dans notre liste d'aliments ! Merci de renouveller votre recherche")
+        message.update({"form": form})
+    elif results["status"] == "no_replacement":
+        form.add_error(None, "il n'existe pas à ce jour d'aliment de remplacement plus sain dans notre base de données.")
+        message.update({"form": form})
+    return render(request, "healthier/_no_results.html", message)

@@ -5,18 +5,22 @@
         <header class="resulthead">
             <div class="container h-100">
                 <div class="row h-100 align-items-center justify-content-center text-center">
+                    <div class="col-md-6">
                     {% crispy form %}
+                    </div>
                 </div>
             </div>
         </header>
         {% if searched.count > 1 and searched.count < 100 %}
         <section class="page-section bg-primary text-white">
-            <div class="row justify-content-center justify-content-space-between align-items-top ml-1 mr-1">
+            <div class="row justify-content-center justify-content-space-between align-items-top ml-1 mr-1 mt-0">
                 
                 {% for food in searched %}
                 <div class="col-sm-4 col-md-4 text-center mt-5 mb-5">
                     <img src="{{food.image_url}}" alt="{{food.name}}" class="food-item-img">
-                    <h3><a class="text-dark space_top" href="{% url "healthier:results" %}?name={{food.name}}&form=chercher">{{food.name}}</a>
+                    <h3><a class="text-dark space_top" href="{% url "healthier:results" %}?id={{food.id}}">
+                        {{ food.name }}.<h4> marques : {% for brand in food.brands.all %}{{brand}} {% endfor %}</h4>
+                    </a>
                     </h3>
                 </div>  
                 {% endfor %} 

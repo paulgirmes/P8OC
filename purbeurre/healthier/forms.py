@@ -12,16 +12,17 @@ from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
 class FoodQuery(forms.Form, ModelForm):
 
-    def __init__(self, *args, align="align-self-baseline", data=None, auto_id=None):
+    name = forms.CharField(max_length=200, required=True, label="name",widget=forms.TextInput())
+
+    def __init__(self, *args, data=None, auto_id=None):
         super().__init__(*args, data=data, auto_id=auto_id)
         self.helper = FormHelper()
         self.helper.form_show_labels = False
         self.helper.form_id = self.auto_id
-        self.helper.form_class = align + ' justify-content-center mx-sm-3 form-inline nav-search'
+        self.helper.form_class = "justify-content-center mx-sm-3 form-inline nav-search"
         self.helper.form_method = 'get'
         self.helper.form_action = "healthier:results"
         self.helper.add_input(Submit(self.auto_id, "chercher"))
-        self.helper.form_error_title = "Oooops!"
         self.food_item = None
         self.replacement_foods = None
 
@@ -29,103 +30,6 @@ class FoodQuery(forms.Form, ModelForm):
         model = Food_item
         fields = ['name',]
 
-    def get_searched_food_Item(self):
-        if self.is_valid():
-            Items_found = self.search()
-            if Items_found == 1:
-                if self.replace():
-                    return 1
-                else:
-                    self.add_error(None, "il n'existe pas d'aliments de remplacement plus sain dans notre base de donnée")
-                    return False
-            elif Items_found > 1 and Items_found <= 100:
-                self.add_error(None, "Il existe " + str(Items_found)+
-                                " aliments contenant '"+self.cleaned_data.get("name")+"' !"
-                                " merci de choisir dans la liste ci dessous."
-                                )
-                return Items_found
-            elif Items_found > 100:
-                self.add_error(None, "Il existe " + str(Items_found)+
-                                " aliments contenant '"+self.cleaned_data.get("name")+"' !"
-                                " merci de préciser votre recherche."
-                                )
-                return Items_found
-            elif Items_found == 0:
-                self.add_error(None, self.cleaned_data.get("name") + " est introuvable dans notre liste d'aliments ! Merci de renouveller votre recherche")
-                return False
-        else:
-            self.add_error(None,"Champ Invalide")
-            return False
-
-    def search(self):
-        try:
-            f = Food_item.objects.get(name__icontains=self.cleaned_data.get("name"))
-            self.food_item = f
-            return 1
-        except MultipleObjectsReturned:
-            f = Food_item.objects.filter(name__icontains=self.cleaned_data.get("name"))
-            self.food_item = f
-            return f.all().count()
-        except ObjectDoesNotExist:
-            try:
-                f = Food_item.objects.get(name__istartswith=self.cleaned_data.get("name").split()[0])
-                self.food_item = f
-                return 1
-            except MultipleObjectsReturned:
-                f = Food_item.objects.filter(name__istartswith=self.cleaned_data.get("name").split()[0])
-                self.food_item = f
-                return f.all().count()
-            except ObjectDoesNotExist:
-                return 0
-
-  
-    def replace(self):
-        categories = list(self.food_item.categories.all())
-
-        replacements = {Food_item.objects.filter(categories__name=category,
-                                                nutri_score_fr__lt=self.food_item.nutri_score_fr,
-                                                nova_grade__lt=self.food_item.nova_grade,
-                                                ).order_by("nutri_score_fr", "nova_grade") for category in categories}
-        query=[]
-        {query.append(replacement) for replacement in replacements if replacement.exists()}
-        cat_number = len(query)
-        results=[]
-        if cat_number > 0:
-            self.replacement_foods = query[0]
-            if cat_number > 1:
-                i=0
-                while i < cat_number-2:
-                    intersect=query[i].intersection(query[i+1])
-                    if intersect.exists():
-                        results.append(intersect)
-                    i+=1
-                if len(results) > 0:
-                    self.replacement_foods=results[0]
-                    x = 0
-                    results_choices=[]
-                    if len(results) > 1:
-                        while x < len(results)-2:
-                            result=results[x].intersection(results[x+1])
-                            if result.exists():
-                                results_choices.append(result)
-                            x+=1
-                        if len(results_choices) > 0:
-                                self.replacement_foods = choice(results_choices)
-                                return True
-                        else:
-                            return True
-                    else:
-                        return True
-                else:
-                    return True   
-            else:
-                return True
-        else:
-            return False
-        
-
-                    
-            
 
 class Signin(UserCreationForm):
     

@@ -74,6 +74,7 @@ hr.light {
   background-size: contain;
   padding-top: 8rem;
   padding-bottom: calc(8rem - #{$navbar-height});
+  border: 10px;
 }
 .result{
   padding-top: 11rem;
@@ -95,18 +96,23 @@ mark{
 }
 .nutri-score{
   height: auto;
-  width: 150px;
+  width: 70px;
   position: absolute;
   left: 60%;
-  bottom: 20%;
+  bottom:90%;
+}
+.nutri-score-solo{
+  height: auto;
+  width: 100px;
 }
 input[name="recherche_2_%s"] {
   background-color: $moules-frites;
   border-color: $moules-frites;
 }
 .food-item-img{
-  max-height: 150px;
-  width: 150px;
+  height: 170px;
+  width: 170px;
+  border-radius: 10px;
 }
 h1, h2, h3, h4, h5, h6{
   word-wrap: break-word;

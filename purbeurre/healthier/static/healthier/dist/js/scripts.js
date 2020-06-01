@@ -102,39 +102,39 @@ $.ajaxSetup({
 $(".save").click(function(event)
         {
         event.preventDefault();
+        $(".modal-error-title").remove();
         //sending request to server : if answer status is ok add the answwer map and the wiki,
         //else only add the answer from server
         $.ajax(
             {
             url: document.location.pathname,
-            data: $('.save').value.serialize(),
+            data: {"value": event.target.attributes.value.value},
             type: 'POST',
             success: function(response) 
                 {
                 var answer_obj = JSON.parse(response)
-                if (answer_obj.status == "False" && answer_obj.result == "already existing")
+                if (answer_obj.status == false && answer_obj.result == "already existing")
                     {              
-                    $("#save-modal-header").append('<h5 class="modal-title" id="save-modal-title">Cet Aliment existe déjà dans vos favoris !</h5>');
+                    $("#save-modal-header").append('<h5 class="modal-title modal-error-title" id="save-modal-title">Cet Aliment existe déjà dans vos favoris !</h5>');
                     $("#save-modal").modal('show');
                     }
-                else if (answer_obj.status == "False" && answer_obj.result == "unforeseen exception")
+                else if (answer_obj.status == false && answer_obj.result == "unforeseen exception")
                     {
-                    $("#save-modal-header").append('<h5 class="modal-title" id="save-modal-title">Aliment non sauvegardé : une erreur inatendue s"est produite.</h5>');
+                    $("#save-modal-header").append('<h5 class="modal-title modal-error-title" id="save-modal-title">Aliment non sauvegardé : une erreur inatendue s"est produite.</h5>');
                     $("#save-modal").modal('show');
                     }
-                else if (answer_obj.status == "True")
+                else if (answer_obj.status == true)
                     {
-                    $("#save-modal-header").append('<h5 class="modal-title" id="save-modal-title">Aliment sauvegardé dans vos favoris.</h5>');
+                    $("#save-modal-header").append('<h5 class="modal-title modal-error-title" id="save-modal-title">Aliment sauvegardé dans vos favoris.</h5>');
                     $("#save-modal").modal('show');
                     }
                 
                 },
             error: function(error) 
                 {
-                $("#save-modal-header").append('<h5 class="modal-title" id="save-modal-title">"La requette a échouée, veuillez vérifier votre connexion"</h5>');
+                $("#save-modal-header").append('<h5 class="modal-title modal-error-title" id="save-modal-title">"La requette a échouée, veuillez vérifier votre connexion"</h5>');
                 $("#save-modal").modal('show');
                 }
             });
 
     });
-

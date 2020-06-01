@@ -29,10 +29,12 @@
                     </div>
                     <h3><a class="text-dark space_top" href="{% url "healthier:fooditem" %}?food_id={{food.id}}">{{food.name}}</a>
                     </h3>
+                    {% if user.is_authenticated %}
                     <form method="post">
                         {% csrf_token %}
                         <button type="submit" class="save bg-moules-frites btn btn-secondary btn-sm" name="save" value="{{food.id}}"><i class="fas fa-save"></i> Sauvegarder</button>
                     </form>
+                    {% endif %}
                    
                 </div> 
                 {% endfor %}    
@@ -50,5 +52,6 @@
                 </div>
             </div>
             </div>
+        
         
         {% endblock middle %}
