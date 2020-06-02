@@ -36,7 +36,6 @@ hr.light {
 }
 
 //- Page section styling
-
 .page-section {
   padding: 8rem 0;
 }
@@ -103,7 +102,12 @@ mark{
 }
 .nutri-score-solo{
   height: auto;
-  width: 100px;
+  width: 25ex;
+}
+.food-facts{
+  height: auto;
+  width: 45ex;
+  border-radius: 10px;
 }
 input[name="recherche_2_%s"] {
   background-color: $moules-frites;
@@ -135,7 +139,7 @@ header.resulthead{
   
   h1 {
     font-size: 2.25rem;
-    color: $rooibos_chocolat;
+    color: $moules-frites;
   }
 
   p{

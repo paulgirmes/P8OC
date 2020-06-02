@@ -74,7 +74,8 @@ class Food_item(models.Model):
         if food_id == None:
             Items_found, number_items_found = Food_item.search(food_name)
             if number_items_found == 1:
-                pass
+                if type(Items_found) == models.QuerySet:
+                    Items_found = list(Items_found)[0]
             elif number_items_found > 1:
                 return {"status": "choice_to_make", "replacement_items": None, "to_be_replaced_item": Items_found}
             else:
@@ -96,15 +97,9 @@ class Food_item(models.Model):
         try:
             f = Food_item.objects.get(name__icontains=food_name)
             return (f, 1)
-        except MultipleObjectsReturned:
-            f = Food_item.objects.filter(name__icontains=food_name)
-            return (f, f.all().count())
-        except ObjectDoesNotExist:
+        except (MultipleObjectsReturned, ObjectDoesNotExist):
             try:
-                f = Food_item.objects.get(name__istartswith=food_name.split()[0])
-                return (f, 1)
-            except MultipleObjectsReturned:
-                f = Food_item.objects.filter(name__istartswith=food_name.split()[0])
+                f = Food_item.objects.filter(name__icontains=food_name).order_by("name").distinct("name")
                 return (f, f.all().count())
             except ObjectDoesNotExist:
                 return (None, 0)

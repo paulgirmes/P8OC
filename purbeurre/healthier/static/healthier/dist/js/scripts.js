@@ -103,8 +103,8 @@ $(".save").click(function(event)
         {
         event.preventDefault();
         $(".modal-error-title").remove();
-        //sending request to server : if answer status is ok add the answwer map and the wiki,
-        //else only add the answer from server
+        //sending request to server to save the requested food item,
+        //toggles a modal if answre is false or server error.
         $.ajax(
             {
             url: document.location.pathname,
