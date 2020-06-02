@@ -14,7 +14,7 @@ from .models import Food_item
 
 
 def home(request):
-    
+    request.session.set_expiry(0)
     form = FoodQuery(auto_id="form")
     form1 = FoodQuery(auto_id="form1")
     context={'form': form, 'form1': form1}
