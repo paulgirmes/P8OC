@@ -62,6 +62,7 @@ class Command(BaseCommand):
             "id",
             "brands",
             "stores",
+            "image_nutrition_url"
         ],
     ):
         self.stdout.write(
@@ -93,6 +94,7 @@ class Command(BaseCommand):
                     and product.get("stores")
                     and product.get("brands")
                     and product.get("categories")
+                    and product.get("image_nutrition_url")
                 ):
                     food_items.append(product)
             return food_items
@@ -123,6 +125,7 @@ class Command(BaseCommand):
                     nova_grade=food_item["nova_group"],
                     image_url=food_item["image_url"],
                     id_open_food_facts=food_item["id"],
+                    image_nutrition_url=food_item["image_nutrition_url"],
                 )
                 if created != False:
                     i += 1

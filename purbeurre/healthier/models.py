@@ -39,6 +39,7 @@ class Food_item(models.Model):
     brands = models.ManyToManyField(Brand)
     categories = models.ManyToManyField(Category)
     favoris = models.ManyToManyField(User)
+    image_nutrition_url = models.URLField(max_length=400)
 
 
     
