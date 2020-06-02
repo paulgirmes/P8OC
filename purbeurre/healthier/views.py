@@ -14,6 +14,7 @@ from .models import Food_item
 
 
 def home(request):
+    
     form = FoodQuery(auto_id="form")
     form1 = FoodQuery(auto_id="form1")
     context={'form': form, 'form1': form1}
@@ -42,6 +43,7 @@ def myfoods(request):
 
 
 def login(request):
+    request.session["visited"]=True
     form1 = FoodQuery(auto_id="form1")
     if not request.user.is_authenticated:
         sign_form = Signin(auto_id="signin%s")
@@ -71,14 +73,10 @@ def login(request):
     else:
         logout(request)
         return redirect(reverse("healthier:home"))
-
-
-
-
-
     return render(request, "healthier/_results.html", message)
 
 def contact(request):
+    request.session["visited"]=True
     form1=FoodQuery(auto_id="form1")
     message = {
         'form1': form1,
@@ -86,6 +84,7 @@ def contact(request):
     return render(request, "healthier/_contact.html", message)
 
 def fooditem(request):
+    request.session["visited"]=True
     form1 = FoodQuery(auto_id="form1")
     message = {
         "form1":form1,
@@ -95,6 +94,7 @@ def fooditem(request):
     return render(request, "healthier/_food_item.html", message)
 
 def general_conditions(request):
+    request.session["visited"]=True
     form1 = FoodQuery(auto_id="form1")
     message = {
         'form1': form1,
@@ -102,6 +102,7 @@ def general_conditions(request):
     return render(request, "healthier/_legal_content.html", message)
 
 def results(request):
+    request.session["visited"]=True
     form1 = FoodQuery(auto_id="form1")
     message = {
         'form1': form1,
