@@ -40,12 +40,9 @@ class Food_item(models.Model):
     categories = models.ManyToManyField(Category)
     favoris = models.ManyToManyField(User)
     image_nutrition_url = models.URLField(max_length=400)
-
-
-    
     def __str__(self):
         return self.name
-    
+
     @staticmethod
     def get_favorites(username):
         favorites = Food_item.objects.filter(favoris__username=username)
@@ -57,17 +54,17 @@ class Food_item(models.Model):
     @staticmethod
     def save_favorites(food_id, user):
         try:
-            f=Food_item.objects.get(id=food_id)
+            f = Food_item.objects.get(id=food_id)
             f.favoris.get(username=user.username)
-            return {"result":"already existing", "status":False}                      
+            return {"result": "already existing", "status": False}
         except ObjectDoesNotExist:
             try:
                 f.favoris.add(user)
-                return {"result":"added", "status":True}
+                return {"result": "added", "status": True}
             except:
-                return {"result":"unforeseen exception", "status":False}
+                return {"result": "unforeseen exception", "status": False}
         else:
-            return {"result":"unforeseen exception", "status":False}
+            return {"result": "unforeseen exception", "status": False}
 
     @staticmethod
     def get_searched_food_Item(food_name=None, food_id=None):
@@ -77,20 +74,40 @@ class Food_item(models.Model):
                 if type(Items_found) == models.QuerySet:
                     Items_found = list(Items_found)[0]
             elif number_items_found > 1:
-                return {"status": "choice_to_make", "replacement_items": None, "to_be_replaced_item": Items_found}
+                return {
+                    "status": "choice_to_make",
+                    "replacement_items": None,
+                    "to_be_replaced_item": Items_found,
+                }
             else:
-                return {"status": "not_found", "replacement_items": None, "to_be_replaced_item": None}
+                return {
+                    "status": "not_found",
+                    "replacement_items": None,
+                    "to_be_replaced_item": None,
+                }
         else:
             Items_found = Food_item.objects.get(id=food_id)
         replacement = Food_item.replace(Items_found)
-        if replacement[0]==True:
-            return {"status": "ok", "replacement_items": replacement[1], "to_be_replaced_item": Items_found}
+        if replacement[0] == True:
+            return {
+                "status": "ok",
+                "replacement_items": replacement[1],
+                "to_be_replaced_item": Items_found,
+            }
         else:
             replacement = Food_item.replace(Items_found, status="nutri-only")
-            if replacement[0]==True:
-                return {"status": "ok", "replacement_items": replacement[1], "to_be_replaced_item": Items_found}
+            if replacement[0] == True:
+                return {
+                    "status": "ok",
+                    "replacement_items": replacement[1],
+                    "to_be_replaced_item": Items_found,
+                }
             else:
-                return {"status": "no_replacement", "replacement_items": None, "to_be_replaced_item": Items_found}
+                return {
+                    "status": "no_replacement",
+                    "replacement_items": None,
+                    "to_be_replaced_item": Items_found,
+                }
 
     @staticmethod
     def search(food_name):
@@ -98,59 +115,73 @@ class Food_item(models.Model):
             f = Food_item.objects.get(name__icontains=food_name)
             return (f, 1)
         except (MultipleObjectsReturned, ObjectDoesNotExist):
-            try:
-                f = Food_item.objects.filter(name__icontains=food_name).order_by("name").distinct("name")
-                return (f, f.all().count())
-            except ObjectDoesNotExist:
-                return (None, 0)
+            f = (
+                Food_item.objects.filter(name__icontains=food_name)
+                .order_by("name")
+                .distinct("name")
+            )
+            return (f, f.all().count())
 
     @staticmethod
     def replace(food_item, status=None):
         categories = list(food_item.categories.all())
         if status == None:
-            replacements = {Food_item.objects.filter(categories__name=category,
-                                                    nutri_score_fr__lt=food_item.nutri_score_fr,
-                                                    nova_grade__lt=food_item.nova_grade,
-                                                    ).order_by("nutri_score_fr", "nova_grade") for category in categories}
+            replacements = {
+                Food_item.objects.filter(
+                    categories__name=category,
+                    nutri_score_fr__lt=food_item.nutri_score_fr,
+                    nova_grade__lt=food_item.nova_grade,
+                ).order_by(
+                    "nutri_score_fr", "nova_grade",
+                )
+                for category in categories
+            }
         elif status == "nutri-only":
-            replacements = {Food_item.objects.filter(categories__name=category,
-                                                    nutri_score_fr__lt=food_item.nutri_score_fr,
-                                                    ).order_by("nutri_score_fr", "nova_grade") for category in categories}
-        query=[]
-        {query.append(replacement) for replacement in replacements if replacement.exists()}
+            replacements = {
+                Food_item.objects.filter(
+                    categories__name=category,
+                    nutri_score_fr__lt=food_item.nutri_score_fr,
+                ).order_by("nutri_score_fr", "nova_grade")
+                for category in categories
+            }
+        query = []
+        {
+            query.append(replacement)
+            for replacement in replacements
+            if replacement.exists()
+        }
         cat_number = len(query)
-        results=[]
+        results = []
         if cat_number > 0:
             replacement_foods = query[0]
             if cat_number > 1:
-                i=0
-                while i < cat_number-2:
-                    intersect=query[i].intersection(query[i+1])
+                i = 0
+                while i < cat_number - 2:
+                    intersect = query[i].intersection(query[i + 1])
                     if intersect.exists():
                         results.append(intersect)
-                    i+=1
+                    i += 1
                 if len(results) > 0:
-                    replacement_foods=results[0]
+                    replacement_foods = results[0]
                     x = 0
-                    results_choices=[]
+                    results_choices = []
                     if len(results) > 1:
-                        while x < len(results)-2:
-                            result=results[x].intersection(results[x+1])
+                        while x < len(results) - 2:
+                            result = results[x].intersection(results[x + 1])
                             if result.exists():
                                 results_choices.append(result)
-                            x+=1
+                            x += 1
                         if len(results_choices) > 0:
-                                replacement_foods = choice(results_choices)
-                                return (True, replacement_foods)
+                            replacement_foods = choice(results_choices)
+                            return (True, replacement_foods)
                         else:
                             return (True, replacement_foods)
                     else:
                         return (True, replacement_foods)
                 else:
-                    return (True, replacement_foods)   
+                    return (True, replacement_foods)
             else:
                 return (True, replacement_foods)
         else:
             return (False, None)
-        
-        
+
