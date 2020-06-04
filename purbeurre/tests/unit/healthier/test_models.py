@@ -1,4 +1,5 @@
 
+from unittest import mock
 from django.test import TestCase
 from django.contrib.auth.models import User
 from healthier.models import Food_item, Category, Brand, Store
@@ -10,7 +11,7 @@ class Food_item_test(TestCase):
                 open_food_facts_url="https://fr.openfoodfacts.org/produit/3103220009512/chamallows-haribo",
                 name = "Chamallows",
                 nutri_score_fr = "d",
-                nova_grade = 4,
+                nova_grade = 3,
                 image_url = "https://static.openfoodfacts.org/images/products/310/322/000/9512/front_fr.54.400.jpg",
                 id_open_food_facts = "1",
                 energy_100g ="326kcal",
@@ -20,7 +21,7 @@ class Food_item_test(TestCase):
                 open_food_facts_url="https://fr.openfoodfacts.org/produit/3103220009512/chamallows-haribo",
                 name = "Chamallows mallows",
                 nutri_score_fr = "a",
-                nova_grade = 1,
+                nova_grade = 2,
                 image_url = "https://static.openfoodfacts.org/images/products/310/322/000/9512/front_fr.54.400.jpg",
                 id_open_food_facts = "2",
                 energy_100g ="326kcal",
@@ -30,12 +31,22 @@ class Food_item_test(TestCase):
                 open_food_facts_url="https://fr.openfoodfacts.org/produit/3103220009512/chamallows-haribo",
                 name = "bananes",
                 nutri_score_fr = "c",
-                nova_grade = 4,
+                nova_grade = 3,
                 image_url = "https://static.openfoodfacts.org/images/products/310/322/000/9512/front_fr.54.400.jpg",
                 id_open_food_facts = "3",
                 energy_100g ="326kcal",
                 image_nutrition_url = "326kcal",
         )
+        food4=Food_item.objects.create(
+            open_food_facts_url="https://fr.openfoodfacts.org/produit/3103220009512/chamallows-haribo",
+            name = "saucisson",
+            nutri_score_fr = "c",
+            nova_grade = 3,
+            image_url = "https://static.openfoodfacts.org/images/products/310/322/000/9512/front_fr.54.400.jpg",
+            id_open_food_facts = "4",
+            energy_100g ="326kcal",
+            image_nutrition_url = "326kcal",
+            )
 
         user=User.objects.create_user("lif65zefus@lkjlkj.eeg", email="lif65zefus@lkjlkj.eeg", password="123456789")
         food.favoris.add(user)
@@ -46,6 +57,8 @@ class Food_item_test(TestCase):
         Category.objects.create(name = "boissons")
         Category.objects.create(name = "aliment sucré")
         Category.objects.create(name = "aliment salé")
+        cat = Category.objects.get(name="aliment salé")
+        food4.categories.add(cat)
 
         
 
@@ -110,7 +123,7 @@ class Food_item_test(TestCase):
         self.assertEquals(Food_item.save_favorites(food_item.id, user), {"result":"added", "status":True})
         self.assertEquals(Food_item.save_favorites(10000, user), {"result":"unforeseen exception", "status":False})
 
-    def test_get_searched_food_Item(self):
+    def test_get_search(self):
         food_item = Food_item.objects.get(id=2)
         f2 = Food_item.objects.filter(name__icontains="mkjrdv").order_by("name").distinct("name")
         self.assertEquals((food_item, 1),Food_item.search(food_item.name))
@@ -123,16 +136,85 @@ class Food_item_test(TestCase):
 
     def test_replace(self):
         food_items = [] 
-        {food_items.append(Food_item.objects.get(id=i)) for i in range(1,3)}
+        {food_items.append(Food_item.objects.get(id=i)) for i in range(1,4)}
         names = ["bonbons", "chocolats", "glaces",
                 "viandes", "boissons","aliment sucré",
-                "aliment salé",
                 ]
         categories = {Category.objects.get(name=name) for name in names}
         self.assertEquals(Food_item.replace(food_items[0]), (False, None))
         {food_item.categories.add(category) for category in categories for food_item in food_items}
-        
+        self.assertQuerysetEqual(
+                                Food_item.replace(food_items[0])[1],
+                                ["Chamallows mallows"],
+                                transform=str
+                                )
+        self.assertEquals(Food_item.replace(food_items[0])[0],
+                        True,
+                        )
+        self.assertQuerysetEqual(
+                                Food_item.replace(food_items[0], status="nutri-only")[1],
+                                ["bananes", "Chamallows mallows"],
+                                transform=str,
+                                ordered=False,
+                                )
 
+    def test_get_searched_food_Item(self):
+        def mock_search_1(food_name):
+            return food_name, 1
+        def mock_search_2(food_name):
+            return food_name, 2
+        def mock_search_0(food_name):
+            return food_name, 0
+        def mock_replace_True(food_item, status=None):
+            return True, "replacement_for "+food_item
+        def mock_replace_False(food_item, status=None):
+            return False, None
+
+        with mock.patch('healthier.models.Food_item.search', new=mock_search_0):
+            self.assertEquals(
+                        Food_item.get_searched_food_Item(
+                                                food_name="name",
+                                                food_id=None
+                                                        ),
+                        {
+                        "status": "not_found",
+                        "replacement_items": None,
+                        "to_be_replaced_item": None,
+                        })
+        with mock.patch('healthier.models.Food_item.search', new=mock_search_1):
+            with mock.patch('healthier.models.Food_item.replace', new=mock_replace_True):
+                self.assertEquals(
+                        Food_item.get_searched_food_Item(
+                                                food_name="name",
+                                                food_id=None
+                                                        ),
+                        {
+                        "status": "ok",
+                        "replacement_items": "replacement_for name",
+                        "to_be_replaced_item": "name",
+                        })
+            with mock.patch('healthier.models.Food_item.replace', new=mock_replace_False):
+                self.assertEquals(
+                        Food_item.get_searched_food_Item(
+                                                food_name="name",
+                                                food_id=None
+                                                        ),
+                        {
+                        "status": "no_replacement",
+                        "replacement_items": None,
+                        "to_be_replaced_item": "name",
+                        })
+        with mock.patch('healthier.models.Food_item.search', new=mock_search_2):
+            self.assertEquals(
+                        Food_item.get_searched_food_Item(
+                                                food_name="name",
+                                                food_id=None
+                                                        ),
+                        {
+                        "status": "choice_to_make",
+                        "replacement_items": None,
+                        "to_be_replaced_item": "name",
+                        })
 
 
 

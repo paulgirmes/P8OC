@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+        
         {
             "name": "Python : Django",
             "type": "python",
@@ -12,6 +13,17 @@
             "args": [
                 "runserver",
                 "--noreload"
+            ],
+            "django": true
+        }
+        {
+            "name": "Python : Django/tests",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\purbeurre\\manage.py",
+            "args": [
+                "test",
+                "tests.unit.healthier.test_models"
             ],
             "django": true
         }
