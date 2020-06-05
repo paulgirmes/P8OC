@@ -23,7 +23,7 @@
             "program": "${workspaceFolder}\\purbeurre\\manage.py",
             "args": [
                 "test",
-                "tests.unit.healthier.test_forms"
+                "tests.unit.healthier.test_views"
             ],
             "django": true
         }
