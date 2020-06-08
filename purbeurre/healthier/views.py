@@ -72,7 +72,7 @@ def login(request):
                         {"sign_form": sign_form, "modaltoshow": "SigninModal"}
                     )
             except:
-                return HttpResponseServerError
+                return HttpResponseServerError("Désolé, une erreur s'est produite dans le traitement de votre inscription !")
         elif "username" in request.GET:
             log_form = Login(request, data=request.GET, auto_id="login%s")
             try:

@@ -197,11 +197,11 @@ class Test_Purbeurre_healthier_results(TestCase):
         setup()
 
     def test_results_url_exists_when_data(self):
-        response = self.client.get("/resultats", data={"id": 9})
+        response = self.client.get("/resultats", data={"form": "Chamallows"})
         self.assertEqual(response.status_code, 200)
 
     def test_results_url_accessible_by_name_when_data(self):
-        response = self.client.get(reverse("healthier:results"), data={"id": 9})
+        response = self.client.get(reverse("healthier:results"), data={"form": "Chamallows"})
         self.assertEqual(response.status_code, 200)
 
     def test_results_uses_correct_template_when_no_results(self):
@@ -210,7 +210,8 @@ class Test_Purbeurre_healthier_results(TestCase):
         self.assertTemplateUsed(response, "healthier/_no_results.html")
 
     def test_results_uses_correct_template_when_result(self):
-        response = self.client.get(reverse("healthier:results"), data={"id": 9})
+        food_item_id = Food_item.objects.get(name__exact="Chamallows").id
+        response = self.client.get(reverse("healthier:results"), {"id": food_item_id})
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "healthier/_results.html")
 
@@ -435,18 +436,115 @@ class Test_Purbeurre_healthier_fooditem(TestCase):
         self.assertEqual(response.status_code, 404)
 
 
-# class Test_Purbeurre_healthier_login(TestCase):
+class Test_Purbeurre_healthier_login(TestCase):
 
+    @classmethod
+    def setUpTestData(cls):
+        setup()
 
-#     def test_login_exists(self):
-#         response = self.client.get("/login")
-#         self.assertEqual(response.status_code, 200)
+    def test_login_exists(self):
+        response = self.client.get("/login")
+        self.assertEqual(response.status_code, 200)
 
-#     def test_login_url_accessible_by_name(self):
-#         response = self.client.get(reverse("healthier:login"))
-#         self.assertEqual(response.status_code, 200)
+    def test_login_url_accessible_by_name(self):
+        response = self.client.get(reverse("healthier:login"))
+        self.assertEqual(response.status_code, 200)
 
-#     def test_login_uses_correct_template(self):
-#             response = self.client.get(reverse("healthier:login"))
-#             self.assertEqual(response.status_code, 200)
-#             self.assertTemplateUsed(response, 'healthier/_login_signin.html')
+    def test_login_uses_correct_template(self):
+        response = self.client.get(reverse("healthier:login"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'healthier/_login_signin.html')
+        
+    def test_GET_context_if_not_logged_in(self):
+        response=self.client.get(reverse("healthier:login"))
+        self.assertTrue("form1" in response.context)
+        self.assertTrue("sign_form" in response.context)
+        self.assertTrue("log_form" in response.context)
+
+    def test_tries_to_log_in_when_GET_data(self):
+
+        def mock_login_user_fail(*args, **kwargs):
+            raise TypeError
+        def mock_login_user_OK(*args, **kwargs):
+            return
+        
+        with mock.patch(
+            "healthier.forms.Login.log_user",
+            new=mock_login_user_OK
+        ):
+            response = self.client.get(
+                reverse("healthier:login"),
+                data={"username":"joe"},
+            )
+            self.assertRedirects(
+                response,
+                reverse("healthier:myaccount"),
+                target_status_code=302,
+            )
+            
+        with mock.patch(
+            "healthier.forms.Login.log_user",
+            new=mock_login_user_fail
+        ):
+            response = self.client.get(
+                reverse("healthier:login"),
+                data={"username":"bar"}
+            )
+            self.assertTrue("modaltoshow" in response.context)
+
+    def test_logout_and_redirects_when_user_logged_in(self):
+        self.assertTrue(
+            self.client.login(
+                username="google@google.com",
+                password="123456789"
+                )
+        )
+        response = self.client.get(reverse("healthier:login"))
+        self.assertRedirects(response, reverse("healthier:home"))
+
+    def test_save_new_user_and_redirects(self):
+        def mock_save_ok(*args, **kwargs):
+            return True
+        def mock_save_nok(*args, **kwargs):
+            return False
+        def mock_save_exception(*args, **kwargs):
+            raise TypeError 
+        with mock.patch("healthier.forms.Signin.save", new=mock_save_ok):
+            response = self.client.post(
+                            reverse("healthier:login"),
+                            data={
+                                "email":"cccsdf@guggle.fra",
+                                "name" : "pppp",
+                                "password1": "123456789",
+                                "password2":"123456789"
+                            }
+                        )
+            self.assertRedirects(
+                response,
+                reverse("healthier:myaccount"),
+                target_status_code=302
+            )
+        with mock.patch("healthier.forms.Signin.save", new=mock_save_nok):
+            response = self.client.post(
+                            reverse("healthier:login"),
+                            data={
+                                "email":"cccsdf@guggle.fra",
+                                "name" : "pppp",
+                                "password1": "123456789",
+                                "password2":"123456789"
+                            }
+                        )
+            self.assertTrue("modaltoshow" in response.context)
+            self.assertTrue("sign_form" in response.context)
+        with mock.patch("healthier.forms.Signin.save", new=mock_save_exception):
+            response = self.client.post(
+                            reverse("healthier:login"),
+                            data={
+                                "email":"cccsdf@guggle.fra",
+                                "name" : "pppp",
+                                "password1": "123456789",
+                                "password2":"123456789"
+                            }
+                        )
+            self.assertEqual(response.status_code, 500)
+
