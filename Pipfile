@@ -7,6 +7,8 @@ verify_ssl = true
 selenium = "*"
 pylint = "*"
 django-debug-toolbar = "*"
+coverage = "*"
+v = {editable = true,version = "*"}
 
 [packages]
 django = "*"

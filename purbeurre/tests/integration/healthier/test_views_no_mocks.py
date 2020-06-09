@@ -1,4 +1,3 @@
-from unittest import mock
 from django.test import TestCase
 from django.urls import reverse
 from django.http import Http404
@@ -10,6 +9,12 @@ def setup():
     testuser = User.objects.create_user(
         "google@google.com",
         email="google@google.com",
+        password="123456789",
+        first_name="Joe",
+    )
+    testuser2 = User.objects.create_user(
+        "google@google.fr",
+        email="google@google.fr",
         password="123456789",
         first_name="Joe",
     )
@@ -33,9 +38,31 @@ def setup():
         energy_100g="326kcal",
         image_nutrition_url="326kcal",
     )
+    food3 = Food_item.objects.create(
+        open_food_facts_url="https://fr.openfoodfacts.org/produit/3103220009512/chamallows-haribo",
+        name="Citron",
+        nutri_score_fr="b",
+        nova_grade="3",
+        image_url="https://static.openfoodfacts.org/images/products/310/322/000/9512/front_fr.54.400.jpg",
+        id_open_food_facts="3",
+        energy_100g="326kcal",
+        image_nutrition_url="326kcal",
+    )
+    food4 = Food_item.objects.create(
+        open_food_facts_url="https://fr.openfoodfacts.org/produit/3103220009512/chamallows-haribo",
+        name="Orange",
+        nutri_score_fr="a",
+        nova_grade="1",
+        image_url="https://static.openfoodfacts.org/images/products/310/322/000/9512/front_fr.54.400.jpg",
+        id_open_food_facts="4",
+        energy_100g="326kcal",
+        image_nutrition_url="326kcal",
+    )
     cat = Category.objects.create(name="bonbons")
     food.categories.add(cat)
     food2.categories.add(cat)
+    food3.categories.add(cat)
+    food4.categories.add(cat)
     food.favoris.add(testuser)
 
 
@@ -245,58 +272,31 @@ class Test_Purbeurre_healthier_results(TestCase):
         )
 
     def test_results_returns_result_when_POST(self):
-        
-        def mock_Food_item_save_favorites(self, *args, **kwargs):
-            return {"result": "added", "status": True}
-        
-        with mock.patch(
-            "healthier.views.Food_item.save_favorites",
-            new=mock_Food_item_save_favorites
-        ):
-            response = self.client.post(
-                reverse("healthier:results"),
-                data={"value": "XXXXXX"}
-            )
-            self.assertContains(response, "added")
+        self.assertTrue(
+            self.client.login(username="google@google.fr", password="123456789")
+        )
+        food_item_id = Food_item.objects.get(name__exact="Orange").id
+        response = self.client.post(
+                        reverse("healthier:results"),
+                        data={"value": food_item_id}
+                    )
+        self.assertContains(response, "added")
+        favorites = Food_item.objects.get(favoris__username="google@google.fr")
 
     def test_results_when_form_is_valid(self):
 
-        # workaround to mock <queryset>.count() method
-        # used on results["to_be_replaced_items"] in views.results :
-        class Queryset(list):
-            def __init__(self, number=0):
-                self.number = number
-            def count(self):
-                return self.number
-
-        def mock_Food_item_get_searched_food_Item(food_id=None, food_name=None):
-            if food_name == "OK":
-                return {"status":"ok", "replacement_items": "several", "to_be_replaced_item" : "one"}
-            if food_name == "choice_to_make":
-                return {"status":"choice_to_make", "replacement_items": "none", "to_be_replaced_item" : Queryset(99)}
-            if food_name == "choice_to_make>100":
-                return {"status":"choice_to_make", "replacement_items": "several", "to_be_replaced_item" : Queryset(101)}
-            if food_name == "not_found":
-                return {"status":"not_found", "replacement_items": "none", "to_be_replaced_item" : "one"}
-            if food_name == "no_replacement":
-                return {"status":"no_replacement", "replacement_items": "none", "to_be_replaced_item" : "one"}
-
-        with mock.patch(
-            "healthier.views.Food_item.get_searched_food_Item",
-            new=mock_Food_item_get_searched_food_Item
-        ):
             # first case : form is valid and 
             # query returns several items from fooditem name provided items number <100:
             response = self.client.get(
                 reverse("healthier:results"),
-                data={"form": "form", "name": "choice_to_make"},
+                data={"form": "form", "name": "Chamallows"},
             )
             self.assertEqual(
                 response.context["form"].errors,
                 {
                     "__all__": [
-                        "Il existe 99"
-                        " aliments contenant 'choice_to_make' !"
+                        "Il existe 2"
+                        " aliments contenant 'Chamallows' !"
                         " merci de choisir l'aliment à remplacer dans la liste ci dessous."
                     ]
                 },
@@ -305,51 +305,39 @@ class Test_Purbeurre_healthier_results(TestCase):
             # several replacement items are returned:
             response = self.client.get(
                 reverse("healthier:results"),
-                data={"form": "form", "name": "OK"},
+                data={"form": "form", "name": "Citron"},
             )
-            self.assertEqual(
-                response.context["food_items"],
-                "several"
+            self.assertContains(
+                response,
+                "Orange"
             )
-            self.assertEqual(
-                response.context["searched"],
-                "one"
+            self.assertContains(
+                response,
+                "Chamallows mallows"
             )
-            # third case query returns several items from fooditem name provided 
-            # items number >100:
+            self.assertContains(
+                response,
+                "Citron"
+            )
+            # third case query does not find a food item from fooditem name provided:
             response = self.client.get(
                 reverse("healthier:results"),
-                data={"form": "form", "name": "choice_to_make>100"},
+                data={"form": "form", "name": "Bar"},
             )
             self.assertEqual(
                 response.context["form"].errors,
                 {
                     "__all__": [
-                        "Il existe 101"
-                        " aliments contenant 'choice_to_make>100' !"
-                        " merci de préciser votre recherche."
-                    ]
-                },
-            )
-            # fourth case query does not find a food item from fooditem name provided:
-            response = self.client.get(
-                reverse("healthier:results"),
-                data={"form": "form", "name": "not_found"},
-            )
-            self.assertEqual(
-                response.context["form"].errors,
-                {
-                    "__all__": [
-                        "not_found "
+                        "Bar "
                         "est introuvable dans notre liste d'aliments ! "
                         "Merci de renouveller votre recherche"
                     ]
                 },
             )
-            # fith case query does not find any replacement items from the given food name:
+            # fourth case query does not find any replacement items from the given food name:
             response = self.client.get(
                 reverse("healthier:results"),
-                data={"form": "form", "name": "no_replacement"},
+                data={"form": "form", "name": "Orange"},
             )
             self.assertEqual(
                 response.context["form"].errors,
@@ -359,47 +347,6 @@ class Test_Purbeurre_healthier_results(TestCase):
                     ]
                 },
             )
-
-
-class Test_Purbeurre_healthier_contact(TestCase):
-
-    def test_contact_exists(self):
-        response = self.client.get("/contact")
-        self.assertEqual(response.status_code, 200)
-
-    def test_contact_url_accessible_by_name(self):
-        response = self.client.get(reverse("healthier:contact"))
-        self.assertEqual(response.status_code, 200)
-
-    def test_contact_uses_correct_template(self):
-        response = self.client.get(reverse("healthier:contact"))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'healthier/_contact.html')
-    
-    def test_fomr1_in_response(self):
-        response = self.client.get(reverse("healthier:contact"))
-        self.assertContains(response, "form1")
-
-
-class Test_Purbeurre_healthier_general_conditions(TestCase):
-
-
-    def test_general_conditions_exists(self):
-        response = self.client.get("/mentions_legales")
-        self.assertEqual(response.status_code, 200)
-
-    def test_general_conditions_url_accessible_by_name(self):
-        response = self.client.get(reverse("healthier:general_conditions"))
-        self.assertEqual(response.status_code, 200)
-
-    def test_general_uses_correct_template(self):
-            response = self.client.get(reverse("healthier:general_conditions"))
-            self.assertEqual(response.status_code, 200)
-            self.assertTemplateUsed(response, 'healthier/_legal_content.html')
-
-    def test_fomr1_in_response(self):
-        response = self.client.get(reverse("healthier:general_conditions"))
-        self.assertContains(response, "form1")
 
 
 class Test_Purbeurre_healthier_fooditem(TestCase):
@@ -452,55 +399,21 @@ class Test_Purbeurre_healthier_login(TestCase):
     def setUpTestData(cls):
         setup()
 
-    def test_login_exists(self):
-        response = self.client.get("/login")
-        self.assertEqual(response.status_code, 200)
-
-    def test_login_url_accessible_by_name(self):
-        response = self.client.get(reverse("healthier:login"))
-        self.assertEqual(response.status_code, 200)
-
-    def test_login_uses_correct_template(self):
-        response = self.client.get(reverse("healthier:login"))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'healthier/_login_signin.html')
-        
-    def test_GET_context_if_not_logged_in(self):
-        response=self.client.get(reverse("healthier:login"))
-        self.assertTrue("form1" in response.context)
-        self.assertTrue("sign_form" in response.context)
-        self.assertTrue("log_form" in response.context)
-
     def test_tries_to_log_in_when_GET_data(self):
-
-        def mock_login_user_fail(*args, **kwargs):
-            raise TypeError
-        def mock_login_user_OK(*args, **kwargs):
-            return
-        
-        with mock.patch(
-            "healthier.forms.Login.log_user",
-            new=mock_login_user_OK
-        ):
-            response = self.client.get(
-                reverse("healthier:login"),
-                data={"username":"joe"},
-            )
-            self.assertRedirects(
-                response,
-                reverse("healthier:myaccount"),
-                target_status_code=302,
-            )
-            
-        with mock.patch(
-            "healthier.forms.Login.log_user",
-            new=mock_login_user_fail
-        ):
-            response = self.client.get(
-                reverse("healthier:login"),
-                data={"username":"bar"}
-            )
-            self.assertTrue("modaltoshow" in response.context)
+        response = self.client.get(
+            reverse("healthier:login"),
+            data={"username":"google@google.com", "password":"123456789"},
+        )
+        self.assertRedirects(
+            response,
+            reverse("healthier:myaccount"),
+        )
+    def test_error_wrong_credentials(self):
+        response = self.client.get(
+            reverse("healthier:login"),
+            data={"username":"BAR", "password":"123456789"}
+        )
+        self.assertTrue("modaltoshow" in response.context)
 
     def test_logout_and_redirects_when_user_logged_in(self):
         self.assertTrue(
@@ -513,48 +426,37 @@ class Test_Purbeurre_healthier_login(TestCase):
         self.assertRedirects(response, reverse("healthier:home"))
 
     def test_save_new_user_and_redirects(self):
-        def mock_save_ok(*args, **kwargs):
-            return True
-        def mock_save_nok(*args, **kwargs):
-            return False
-        def mock_save_exception(*args, **kwargs):
-            raise TypeError 
-        with mock.patch("healthier.forms.Signin.save", new=mock_save_ok):
-            response = self.client.post(
-                            reverse("healthier:login"),
-                            data={
-                                "email":"cccsdf@guggle.fra",
-                                "name" : "pppp",
-                                "password1": "123456789",
-                                "password2":"123456789"
-                            }
-                        )
-            self.assertRedirects(
-                response,
-                reverse("healthier:myaccount"),
-                target_status_code=302
-            )
-        with mock.patch("healthier.forms.Signin.save", new=mock_save_nok):
-            response = self.client.post(
-                            reverse("healthier:login"),
-                            data={
-                                "email":"cccsdf@guggle.fra",
-                                "name" : "pppp",
-                                "password1": "123456789",
-                                "password2":"123456789"
-                            }
-                        )
-            self.assertTrue("modaltoshow" in response.context)
-            self.assertTrue("sign_form" in response.context)
-        with mock.patch("healthier.forms.Signin.save", new=mock_save_exception):
-            response = self.client.post(
-                            reverse("healthier:login"),
-                            data={
-                                "email":"cccsdf@guggle.fra",
-                                "name" : "pppp",
-                                "password1": "123456789",
-                                "password2":"123456789"
-                            }
-                        )
-            self.assertEqual(response.status_code, 500)
+        # user created and logged in
+        response = self.client.post(
+                        reverse("healthier:login"),
+                        data={
+                            "email":"cccsdf@guggle.fra",
+                            "first_name" : "pppp",
+                            "password1": "randompassword35",
+                            "password2": "randompassword35",
+                        }
+                    )
+        self.assertRedirects(
+            response,
+            reverse("healthier:myaccount"),
+        )
+        user = User.objects.get(username="cccsdf@guggle.fra")
+        self.assertEqual(user.email, "cccsdf@guggle.fra")
+        self.assertEqual(user.first_name, "pppp")
+
+    def test_NOT_save_new_user(self):
+        response = self.client.post(
+                        reverse("healthier:login"),
+                        data={
+                            "email":"cccsdgugglefra",
+                            "first_name" : "pppp",
+                            "password1": "randompassword35",
+                            "password2": "randompassword35",
+                        }
+                    )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue("modaltoshow" in response.context)
+        self.assertTrue("sign_form" in response.context)
+        
+        
 

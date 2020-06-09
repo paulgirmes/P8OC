@@ -107,7 +107,7 @@ class Food_item_test(TestCase):
         self.assertEquals(food_item.__str__(), "Chamallows")
 
     def test_get_favorites(self):
-        user=User.objects.get(id=1)
+        user=User.objects.get(username="lif65zefus@lkjlkj.eeg")
         food_item = Food_item.objects.get(id=1)
         favoris = list(Food_item.get_favorites(user.username))[0]
         self.assertEquals(favoris, food_item)
@@ -116,7 +116,7 @@ class Food_item_test(TestCase):
         self.assertEquals(favoris, False)
     
     def test_save_favorites(self):
-        user=User.objects.get(id=1)
+        user=User.objects.get(username="lif65zefus@lkjlkj.eeg")
         food_item = Food_item.objects.get(id=1)
         self.assertEquals(Food_item.save_favorites(food_item.id, user), {"result":"already existing", "status":False})
         food_item.favoris.remove(user)
