@@ -1,3 +1,7 @@
+"""
+unit tests for Heathier app views
+"""
+
 from unittest import mock
 from django.test import TestCase
 from django.urls import reverse

@@ -1,3 +1,6 @@
+"""
+unit tests for Heathier app models
+"""
 
 from unittest import mock
 from django.test import TestCase
@@ -142,8 +145,10 @@ class Food_item_test(TestCase):
                 "viandes", "boissons","aliment sucré",
                 ]
         categories = {Category.objects.get(name=name) for name in categories_names}
+        # no healthier food is returned for Chamallows
         self.assertEquals(Food_item.replace(food_items[0]), (False, None))
         {food_item.categories.add(category) for category in categories for food_item in food_items}
+        # only "Chamallows mallows" is returned with better NOVA and Nutri-score
         self.assertQuerysetEqual(
                                 Food_item.replace(food_items[0])[1],
                                 ["Chamallows mallows"],
@@ -152,6 +157,7 @@ class Food_item_test(TestCase):
         self.assertEquals(Food_item.replace(food_items[0])[0],
                         True,
                         )
+        # ["bananes", "Chamallows mallows","saucisson"] are returned with better Nutri-score only
         self.assertQuerysetEqual(
                                 Food_item.replace(food_items[0], status="nutri-only")[1],
                                 ["bananes", "Chamallows mallows","saucisson"],
@@ -170,7 +176,7 @@ class Food_item_test(TestCase):
             return True, "replacement_for "+food_item
         def mock_replace_False(food_item, status=None):
             return False, None
-
+        #no item found for given name
         with mock.patch('healthier.models.Food_item.search', new=mock_search_0):
             self.assertEquals(
                         Food_item.get_searched_food_Item(
@@ -182,7 +188,9 @@ class Food_item_test(TestCase):
                         "replacement_items": None,
                         "to_be_replaced_item": None,
                         })
+        
         with mock.patch('healthier.models.Food_item.search', new=mock_search_1):
+            #item found for given name and replacement item found
             with mock.patch('healthier.models.Food_item.replace', new=mock_replace_True):
                 self.assertEquals(
                         Food_item.get_searched_food_Item(
@@ -194,6 +202,7 @@ class Food_item_test(TestCase):
                         "replacement_items": "replacement_for name",
                         "to_be_replaced_item": "name",
                         })
+            #item found for given name and no replacement item found
             with mock.patch('healthier.models.Food_item.replace', new=mock_replace_False):
                 self.assertEquals(
                         Food_item.get_searched_food_Item(
@@ -205,6 +214,7 @@ class Food_item_test(TestCase):
                         "replacement_items": None,
                         "to_be_replaced_item": "name",
                         })
+        #several items found for given name, user must make a choice
         with mock.patch('healthier.models.Food_item.search', new=mock_search_2):
             self.assertEquals(
                         Food_item.get_searched_food_Item(
@@ -216,9 +226,6 @@ class Food_item_test(TestCase):
                         "replacement_items": None,
                         "to_be_replaced_item": "name",
                         })
-
-
-
 
 
 class Brand_test(TestCase):

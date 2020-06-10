@@ -1,3 +1,7 @@
+"""
+Healthier app forms
+"""
+
 from random import choice
 from django import forms
 from crispy_forms.helper import FormHelper
@@ -11,6 +15,9 @@ from .models import Food_item
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
 class FoodQuery(forms.Form, ModelForm):
+    """
+    used to make food_item queries / display errors.
+    """
 
     name = forms.CharField(max_length=200, required=True, label="name",widget=forms.TextInput())
 
@@ -33,7 +40,9 @@ class FoodQuery(forms.Form, ModelForm):
 
 class Signin(UserCreationForm):
     
-
+    """
+    used to create new user accounts / display errors.
+    """
     first_name = forms.CharField(required=True, label="prénom",widget=forms.TextInput())
     email = forms.EmailField(required=True, label="email")
 
@@ -57,6 +66,7 @@ class Signin(UserCreationForm):
             user = super().save(commit=False)
         except:
             return self.errors
+        # workaround to avoid custom user model creation (username is not necessarry per data model design but is per standard User model)
         user.username = user.email
         user.set_password(self.cleaned_data["password1"])
         try:
@@ -74,6 +84,10 @@ class Signin(UserCreationForm):
 
 
 class Login(AuthenticationForm):
+
+    """
+    used to check credentials / log user / display errors.
+    """
 
     username = UsernameField(label="email",widget=forms.TextInput(attrs={'autofocus': True}))
 

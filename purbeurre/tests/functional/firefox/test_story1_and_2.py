@@ -1,4 +1,5 @@
 """ 
+Functionnal tests for 2 user stories :
 As Lily I want to make a search about a food directly from the home page.
 As Lily i want to login and acces to my account page.
 """

@@ -1,3 +1,7 @@
+"""
+Healthier app views
+"""
+
 import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import (
@@ -51,6 +55,10 @@ def myfoods(request):
 
 
 def login(request):
+    """
+    login and redirects to myaccount or create a new user and redirects
+    to myaccount or logout and redirects to home if user logged-in
+    """
     request.session["visited"] = True
     form1 = FoodQuery(auto_id="form1")
     if not request.user.is_authenticated:
@@ -118,6 +126,10 @@ def general_conditions(request):
 
 
 def results(request):
+    """
+    returns results for searched replacement food or error/ 
+    allows AJAX to add a replacement item to favorites
+    """
     request.session["visited"] = True
     form1 = FoodQuery(auto_id="form1")
     message = {
@@ -126,6 +138,7 @@ def results(request):
         "searched": "",
     }
     if "form" in request.GET or "form1" in request.GET:
+        # search for replacement food
         form = FoodQuery(data=request.GET, auto_id="form")
         if form.is_valid():
             results = Food_item.get_searched_food_Item(
@@ -137,6 +150,7 @@ def results(request):
     elif "id" in request.GET:
         results = Food_item.get_searched_food_Item(food_id=request.GET["id"])
     elif request.method == "POST":
+        # handle AJAX request to add an item to user's favorites
         result = Food_item.save_favorites(request.POST["value"], request.user)
         return HttpResponse(json.dumps(result))
     else:
