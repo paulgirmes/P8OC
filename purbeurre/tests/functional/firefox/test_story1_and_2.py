@@ -1,5 +1,9 @@
-""" As Lily I want to make a search about a food directly from the home page
+""" 
+As Lily I want to make a search about a food directly from the home page.
+As Lily i want to login and acces to my account page.
 """
+
+
 import time
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.contrib.auth.models import User
@@ -18,12 +22,11 @@ class SeleniumTests(StaticLiveServerTestCase):
         cls.selenium = WebDriver()
         cls.selenium.implicitly_wait(10)
         cls.selenium.set_script_timeout(10)
-        testuser = User.objects.create_user(
-            "google@google.com",
-            email="google@google.com",
-            password="123456789",
-            first_name="Joe",
-        )
+        # test_user = User.objects.create_user(
+        #                 "lif65zefus@lkjlkj.eeg",
+        #                 email="lif65zefus@lkjlkj.eeg",
+        #                 password="123456789"
+        #             )
         food = Food_item.objects.create(
             open_food_facts_url="https://fr.openfoodfacts.org/produit/3103220009512/chamallows-haribo",
             name="Chamallows",
@@ -47,7 +50,7 @@ class SeleniumTests(StaticLiveServerTestCase):
         cat = Category.objects.create(name="bonbons")
         food.categories.add(cat)
         food2.categories.add(cat)
-        food.favoris.add(testuser)
+        # food.favoris.add(test_user)
 
     @classmethod
     def tearDownClass(cls):
@@ -88,6 +91,13 @@ class SeleniumTests(StaticLiveServerTestCase):
         )
 
     def test_login(self):
+        User.objects.create_user(
+                        "lif65zefus@lkjlkj.eeg",
+                        email="lif65zefus@lkjlkj.eeg",
+                        password="123456789",
+                        first_name = "joe"
+                    )
+
         self.selenium.get("%s%s" % (self.live_server_url, "/login"))
         time.sleep(3)
         self.selenium.find_element(By.NAME, "login").click()
@@ -95,9 +105,11 @@ class SeleniumTests(StaticLiveServerTestCase):
         modal_form = self.selenium.find_element(By.ID, "LoginModal")
         button = modal_form.find_element(By.NAME, "Login")
         password = modal_form.find_element(By.NAME, "password")
-        email = modal_form.find_element(By.NAME, "username")
-        email.send_keys("google@google.com")
+        username = modal_form.find_element(By.NAME, "username")
+        username.send_keys("lif65zefus@lkjlkj.eeg")
+        time.sleep(1)
         password.send_keys("123456789")
+        time.sleep(1)
         button.click()
         time.sleep(1)
         self.assertURLEqual(

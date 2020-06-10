@@ -63,52 +63,52 @@ class Food_item_test(TestCase):
         
 
     def test_OFF_url_label(self):
-        food_item = Food_item.objects.get(id=1)
+        food_item = Food_item.objects.get(name="Chamallows")
         field_label = food_item._meta.get_field('open_food_facts_url').verbose_name
         self.assertEquals(field_label, 'open food facts url')
 
     def test_name_label(self):
-        food_item = Food_item.objects.get(id=1)
+        food_item = Food_item.objects.get(name="Chamallows")
         field_label = food_item._meta.get_field('name').verbose_name
         self.assertEquals(field_label, 'name')
 
     def test_nutri_score_fr_label(self):
-        food_item = Food_item.objects.get(id=1)
+        food_item = Food_item.objects.get(name="Chamallows")
         field_label = food_item._meta.get_field('nutri_score_fr').verbose_name
         self.assertEquals(field_label, 'nutri score fr')
 
     def test_nova_grade_label(self):
-        food_item = Food_item.objects.get(id=1)
+        food_item = Food_item.objects.get(name="Chamallows")
         field_label = food_item._meta.get_field('nova_grade').verbose_name
         self.assertEquals(field_label, 'nova grade')
 
     def test_image_url_fr_label(self):
-        food_item = Food_item.objects.get(id=1)
+        food_item = Food_item.objects.get(name="Chamallows")
         field_label = food_item._meta.get_field('image_url').verbose_name
         self.assertEquals(field_label, 'image url')
 
     def test_id_open_food_facts_label(self):
-        food_item = Food_item.objects.get(id=1)
+        food_item = Food_item.objects.get(name="Chamallows")
         field_label = food_item._meta.get_field('id_open_food_facts').verbose_name
         self.assertEquals(field_label, 'id open food facts')
 
     def test_energy_100g_label(self):
-        food_item = Food_item.objects.get(id=1)
+        food_item = Food_item.objects.get(name="Chamallows")
         field_label = food_item._meta.get_field('energy_100g').verbose_name
         self.assertEquals(field_label, 'energy 100g')
 
     def test_image_nutrition_url_label(self):
-        food_item = Food_item.objects.get(id=1)
+        food_item = Food_item.objects.get(name="Chamallows")
         field_label = food_item._meta.get_field('image_nutrition_url').verbose_name
         self.assertEquals(field_label, 'image nutrition url')
 
     def test_str(self):
-        food_item = Food_item.objects.get(id=1)
+        food_item = Food_item.objects.get(name="Chamallows")
         self.assertEquals(food_item.__str__(), "Chamallows")
 
     def test_get_favorites(self):
         user=User.objects.get(username="lif65zefus@lkjlkj.eeg")
-        food_item = Food_item.objects.get(id=1)
+        food_item = Food_item.objects.get(name="Chamallows")
         favoris = list(Food_item.get_favorites(user.username))[0]
         self.assertEquals(favoris, food_item)
         food_item.favoris.all().delete()
@@ -117,14 +117,14 @@ class Food_item_test(TestCase):
     
     def test_save_favorites(self):
         user=User.objects.get(username="lif65zefus@lkjlkj.eeg")
-        food_item = Food_item.objects.get(id=1)
+        food_item = Food_item.objects.get(name="Chamallows")
         self.assertEquals(Food_item.save_favorites(food_item.id, user), {"result":"already existing", "status":False})
         food_item.favoris.remove(user)
         self.assertEquals(Food_item.save_favorites(food_item.id, user), {"result":"added", "status":True})
         self.assertEquals(Food_item.save_favorites(10000, user), {"result":"unforeseen exception", "status":False})
 
     def test_get_search(self):
-        food_item = Food_item.objects.get(id=2)
+        food_item = Food_item.objects.get(name="Chamallows mallows")
         f2 = Food_item.objects.filter(name__icontains="mkjrdv").order_by("name").distinct("name")
         self.assertEquals((food_item, 1),Food_item.search(food_item.name))
         results = Food_item.search("mkjrdv")
@@ -135,12 +135,13 @@ class Food_item_test(TestCase):
         self.assertQuerysetEqual(results[0], ["Chamallows" ,"Chamallows mallows"], transform=str)
 
     def test_replace(self):
+        food_names =["Chamallows", "Chamallows mallows", "bananes", "saucisson"]
         food_items = [] 
-        {food_items.append(Food_item.objects.get(id=i)) for i in range(1,4)}
-        names = ["bonbons", "chocolats", "glaces",
+        {food_items.append(Food_item.objects.get(name=name)) for name in food_names}
+        categories_names = ["bonbons", "chocolats", "glaces",
                 "viandes", "boissons","aliment sucré",
                 ]
-        categories = {Category.objects.get(name=name) for name in names}
+        categories = {Category.objects.get(name=name) for name in categories_names}
         self.assertEquals(Food_item.replace(food_items[0]), (False, None))
         {food_item.categories.add(category) for category in categories for food_item in food_items}
         self.assertQuerysetEqual(
@@ -153,7 +154,7 @@ class Food_item_test(TestCase):
                         )
         self.assertQuerysetEqual(
                                 Food_item.replace(food_items[0], status="nutri-only")[1],
-                                ["bananes", "Chamallows mallows"],
+                                ["bananes", "Chamallows mallows","saucisson"],
                                 transform=str,
                                 ordered=False,
                                 )
@@ -227,12 +228,12 @@ class Brand_test(TestCase):
         Brand.objects.create(name="herta")
     
     def test_brand_name_label(self):
-        brand = Brand.objects.get(id=1)
+        brand = Brand.objects.get(name="herta")
         field_label = brand._meta.get_field('name').verbose_name
         self.assertEquals(field_label, "name")
     
     def test_str(self):
-        brand = Brand.objects.get(id=1)
+        brand = Brand.objects.get(name="herta")
         self.assertEquals(brand.__str__(), "herta")
 
 class Category_test(TestCase):
@@ -241,12 +242,12 @@ class Category_test(TestCase):
         Category.objects.create(name="boissons chocolatées")
     
     def test_category_name_label(self):
-        category = Category.objects.get(id=1)
+        category = Category.objects.get(name="boissons chocolatées")
         field_label = category._meta.get_field('name').verbose_name
         self.assertEquals(field_label, "name")
     
     def test_str(self):
-        category = Category.objects.get(id=1)
+        category = Category.objects.get(name="boissons chocolatées")
         self.assertEquals(category.__str__(), "boissons chocolatées")
     
 class Store_test(TestCase):
@@ -255,11 +256,11 @@ class Store_test(TestCase):
         Store.objects.create(name="Carrefour")
     
     def test_category_name_label(self):
-        store = Store.objects.get(id=1)
+        store = Store.objects.get(name="Carrefour")
         field_label = store._meta.get_field('name').verbose_name
         self.assertEquals(field_label, "name")
     
     def test_str(self):
-        store = Store.objects.get(id=1)
+        store = Store.objects.get(name="Carrefour")
         self.assertEquals(store.__str__(), "Carrefour")
     

@@ -23,7 +23,7 @@
             "program": "${workspaceFolder}\\purbeurre\\manage.py",
             "args": [
                 "test",
-                "tests.integration.healthier.test_views_no_mocks"
+                "tests.functional.firefox.test_story1_and_2"
             ],
             "django": true
         }
