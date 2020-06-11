@@ -19,6 +19,7 @@ gunicorn = "*"
 django-debug-toolbar = "*"
 coverage = "*"
 sentry-sdk = "*"
+whitenoise = "*"
 
 [requires]
 python_version = "3.7"
