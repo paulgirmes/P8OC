@@ -129,10 +129,16 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATICFILES_DIR = {
+    os.path.join(BASE_DIR, "static")
+}
+
+
 CSRF_COOKIE_SECURE = True
 INTERNAL_IPS = ['127.0.0.1']
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 CRISPY_FAIL_SILENTLY = not DEBUG
 
-django_heroku.settings(locals())
+if os.environ.get("ENV") == production:
+    django_heroku.settings(locals())
