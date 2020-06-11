@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'healthier.apps.HealthierConfig',
-    'debug_toolbar',
+    # 'debug_toolbar',
     'crispy_forms',
     
 ]
