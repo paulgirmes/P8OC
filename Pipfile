@@ -17,6 +17,7 @@ requests = "*"
 django-crispy-forms = "*"
 django-heroku = "*"
 gunicorn = "*"
+django-debug-toolbar = "*"
 
 [requires]
 python_version = "3.8"
