@@ -18,6 +18,7 @@ django-crispy-forms = "*"
 django-heroku = "*"
 gunicorn = "*"
 django-debug-toolbar = "*"
+whitenoise = "*"
 
 [requires]
 python_version = "3.8"

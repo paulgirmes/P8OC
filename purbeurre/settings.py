@@ -25,7 +25,7 @@ SECRET_KEY = '8n(2reo1t0@r=qe!nj5eobflmqr(8t_m_xw78-w#_0-f_f0yjv'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False if os.environ.get("ENV", "development") == "production" else True
 
-ALLOWED_HOSTS = [".herokuapps.com", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = [".herokuapp.com", "localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -129,7 +129,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-
+CSRF_COOKIE_SECURE = True
 INTERNAL_IPS = ['127.0.0.1']
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
