@@ -132,7 +132,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIR = {
-    os.path.join(BASE_DIR, "healthier/static/healthier/dist")
+    os.path.join(BASE_DIR, "healthier/static/healthier/dist/assets"),
+    os.path.join(BASE_DIR, "healthier/static/healthier/dist/css"),
+    os.path.join(BASE_DIR, "healthier/static/healthier/dist/js"),
+
 }
 
 
