@@ -21,7 +21,7 @@ from . import views
 app_name='healthier'
 
 urlpatterns = [
-    path("/", views.home, name='home'),
+    path("", views.home, name='home'),
     path("moncompte/", views.myaccount, name='myaccount'),
     path("mesaliments/", views.myfoods, name='myfoods'),
     path("resultats/", views.results, name='results'),
