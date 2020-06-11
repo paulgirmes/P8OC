@@ -135,9 +135,11 @@ STATICFILES_DIR = {
 
 
 CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
 INTERNAL_IPS = ['127.0.0.1']
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 CRISPY_FAIL_SILENTLY = not DEBUG
 
-django_heroku.settings(locals())
+django_heroku.settings(locals(), logging=False)
