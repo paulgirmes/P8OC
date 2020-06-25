@@ -4,3 +4,11 @@ python:
 
 before_script:
  - pipenv install
+
+services:
+ - postgresql
+
+env: DJANGO_SETTINGS_MODULE=healthier.settings.travis
+
+script:
+ - ./manage.py test
