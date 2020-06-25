@@ -3,6 +3,7 @@ python:
  - '3.8'
 
 before_script:
+ - apt-get install firefox-geckodriver
  - pipenv install
 
 services:
