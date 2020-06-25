@@ -1,6 +1,6 @@
 language: python
 python:
-  - '3.5'
+ - '3.5'
 
 before_script:
 
@@ -9,7 +9,7 @@ env:
 DJANGO_SETTINGS_MODULE="healthier.settings.travis"
 
 services:
-  - postgresql
+ - postgresql
 
 script:
-  - ./manage.py test
+ - ./manage.py test
