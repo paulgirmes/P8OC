@@ -2,9 +2,6 @@ language: python
 python:
  - '3.8'
 
-before_install:
- - sudo apt-get -y install firefox-geckodriver
-
 before_script:
  - pipenv install
 
@@ -14,4 +11,5 @@ services:
 env: DJANGO_SETTINGS_MODULE=healthier.settings.travis
 
 script: 
- - python manage.py test
+ - python manage.py test tests.unit
+ - python manage.py test tests.integration
