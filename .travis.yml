@@ -10,5 +10,5 @@ services:
 
 env: DJANGO_SETTINGS_MODULE=healthier.settings.travis
 
-script:
- - sudo ./manage.py test
+script: 
+ - ./manage.py test
