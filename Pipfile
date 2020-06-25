@@ -20,6 +20,7 @@ django-debug-toolbar = "*"
 coverage = "*"
 sentry-sdk = "*"
 whitenoise = "*"
+selenium = "*"
 
 [requires]
 python_version = "3.7"
