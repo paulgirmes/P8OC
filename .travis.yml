@@ -3,7 +3,7 @@ python:
   - '3.5'
 
 before_script:
-  - pipenv install --deploy
+
 
 env:
 DJANGO_SETTINGS_MODULE="healthier.settings.travis"
