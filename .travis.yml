@@ -1,0 +1,20 @@
+language: python
+python:
+  - '3.5'
+
+# safelist
+branches:
+  only:
+    - p10
+
+before_script:
+  - pipenv install --deploy
+
+env:
+DJANGO_SETTINGS_MODULE="healthier.settings.travis"
+
+services:
+  - postgresql
+
+script:
+  - ./manage.py test
