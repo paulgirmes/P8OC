@@ -39,6 +39,32 @@ class Reset_Password(auth_views.PasswordResetView):
         return self.render_to_response(self.get_context_data())
 
 
+class PasswordResetDoneView(auth_views.PasswordResetDoneView):
+    template_name = "healthier/_password_reset_done.html"
+    extra_context = {
+            "form1": FoodQuery(auto_id="form1"),
+        }
+    def get(self, request, *args, **kwargs):
+        return self.render_to_response(self.get_context_data())
+
+
+class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+    template_name = "healthier/_password_reset_confirm.html"
+    extra_context = {
+            "form1": FoodQuery(auto_id="form1"),
+        }
+    def get(self, request, *args, **kwargs):
+        return self.render_to_response(self.get_context_data())
+
+
+class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
+    template_name = "healthier/_password_reset_complete.html"
+    extra_context = {
+            "form1": FoodQuery(auto_id="form1"),
+        }
+    def get(self, request, *args, **kwargs):
+        return self.render_to_response(self.get_context_data())
+
 def home(request):
     request.session.set_expiry(0)
     form = FoodQuery(auto_id="form")
