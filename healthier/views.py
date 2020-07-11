@@ -19,9 +19,24 @@ from django.http import (
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from sentry_sdk import capture_message
+from django.contrib.auth import views as auth_views
 
 from .forms import FoodQuery, Login, Signin
 from .models import Food_item
+
+
+class Reset_Password(auth_views.PasswordResetView):
+    template_name = "healthier/_reset-password.html"
+    extra_context = {
+            "form1": FoodQuery(auto_id="form1"),
+            "user_name": "cher utilisateur",
+        }
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            self.extra_context.update({
+                "user_name": request.user.first_name,
+            })
+        return self.render_to_response(self.get_context_data())
 
 
 def home(request):
