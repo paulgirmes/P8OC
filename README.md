@@ -1,6 +1,6 @@
 # <H1 align="center">FOOD SWAPPER</h1>
 
-<img src="https://travis-ci.org/paulgirmes/P8OC.svg?branch=p10&amp;status=unknown" alt="build:">
+<img src="https://travis-ci.org/paulgirmes/P8OC.svg?branch=p11&amp;status=unknown" alt="build:">
 
 <h4 align="center">A WEB application that allows users to search for healthier food replacements, built with 
 <a href="https://www.djangoproject.com/" target="_blank">Django</a>.</h4>
