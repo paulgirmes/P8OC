@@ -9,7 +9,7 @@
 
 ## Demo
 
-👉 Watch it deployed in DigitalOcean <a href="https://http://165.22.87.54/">here</a>.
+👉 Watch it deployed in DigitalOcean <a href="https://http://165.22.87.54/">here</a>
 
 ### Using
 
